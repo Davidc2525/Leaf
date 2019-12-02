@@ -1,0 +1,122 @@
+  #include <stdlib.h>
+  #include <iostream>
+  #include "../tree.h"
+  
+  using namespace std;
+  
+  
+
+   COMPILER Block
+   
+   string * _to_reg_(int r){
+    
+   //return new string("R"+to_string(r));
+    
+    switch(r){
+    
+        case 1:{
+        
+            return new string("rax");
+        }
+        
+        case 2:{
+            return new string("rbx");
+        }
+        
+        case 3:{
+            return new string("rcx");
+        }
+        
+        case 4:{
+            return new string("rdx");
+        }
+    }
+    
+  }
+   
+   void LexString(string *lex){
+         string * ft = new string("");
+         ft->append(string(coco_string_create_char(t->val)));
+         //cout<<" ft "<<ft->c_str()<<endl;
+         lex->append(*ft);
+  }
+  CHARACTERS
+   tab           = '\u0009'. /*  9 = tabulator */
+    lf            = '\u000a'. /* 10 = line feed */
+    cr            = '\u000d'. /* 13 = carriage return */
+    whiteSpace = ' ' + '\t' + '\r' +'\n'.
+    digit    = "0123456789" .
+    letter   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+  
+ 
+  TOKENS
+    number   = digit { digit } .
+    variable = letter {letter}.
+    
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO "\n"
+  
+IGNORE whiteSpace
+
+PRODUCTIONS
+    
+     
+    Block (. AST BS = CreateStatementBlock(); AST E; .) = "{" {Statement<E> (. StatementBlockAdd(BS,E); .)} "}" (.GenerateCode(BS);.) .
+    
+    Statement<AST &E>   (. printf("\n"); AST T; string * CH= new string("s"); .)
+      = Identifier<CH>  ("=" Expression<T>  (.
+                            
+                             E = AssignmentNode(VarNode(CH),T);
+                             .) 
+                             | "("")" (. cout<<"CALL "<<*CH<<endl; .)
+                             
+                        ) ";"
+                             
+      | "print" "(" Expression<E> ["," Expression<T>] ")" (. cout<<"CALL print"<<endl; .) ";"
+      | Block (. cout<<"bloc"<<endl;.)
+      | Expression<E> (. cout<<"expr"<<endl;.)
+      | "return" Expression<E> (. cout<<"expr"<<endl;.)
+      | FuncDecl<E>
+      | VarDecl<E>
+      | ";" .
+        
+    FuncDecl<AST &E> (. string * name = new string(""); .) 
+     = "func" Identifier<name> (. E = FuncDeclNode(name); .) '(' ')' 
+      "{" { (.  AST S; .) Statement<S> (. StatementBlockAdd(E,S); .)} "}"  .
+     
+    Type (. string *type = new string(""); .) = Identifier<type>.
+    VarDecl<AST &E>  (.string *type = new string("");.) 
+      = Type Identifier<type> {"," Identifier<type>} ";".
+
+    Expression<AST &E>
+    =                          (. AST T;  .)
+      Term<E>
+      {   "+" Term<T>          (. E = BinOpNode(Plus, E, T); .)
+        | "-" Term<T>          (. E = BinOpNode(Minus, E, T); .)
+      } .
+        
+    
+      
+   Term<AST &T>
+    =                          (. AST F; .)
+      Factor<T>
+      {   "*" Factor<F>        (. T = BinOpNode(Times, T, F); .)
+        | "/" Factor<F>        (. T = BinOpNode(Slash, T, F); .)
+      } .
+    Factor<AST &F>
+    =                          (. string * CH = new string(""); int N=0;   F = EmptyNode(); .)
+                               (..)
+    (   Identifier<CH>         (. F = VarNode(CH); .)
+      | Number<N>              (. F = ConstNode(N); .)
+      | "(" Expression<F> ")"
+    ) .
+    
+    Identifier<string * CH>         (.     .)
+    =  variable                  (. string * str = new string("");
+                                    LexString(str);
+                                    *CH= *str ; .) .
+    Number<int &N>               (.    .)
+    =  number                    (.string * str = new string("");
+                                    LexString(str);
+                                    N = atoi(str->c_str());  .) .
+  END Block.

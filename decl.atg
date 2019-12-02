@@ -1,0 +1,232 @@
+//0426-8026317
+//Luiisaweed@hotmail.c­om
+//21170102.jared
+
+//Luisa25161818
+//3591413
+ #include <stdlib.h>
+ #include <iostream>
+ using namespace std;
+ COMPILER Pro
+class VarData{
+
+public:
+	int kind = 0; //var = 0 fun = 1  puntero = 2
+	
+	int deph = 0;
+	string * type;
+	string * name;
+
+	VarData * cvd=NULL; 
+	VarData(){
+		name = new string("");
+		type = new string("");
+	};
+};
+	void _array(VarData * vd){
+		_array1(vd,0);
+	}
+	void _array1(VarData * vd,int size){
+		VarData * cvd = new VarData();
+		cvd->kind = 0;
+		cvd->type = new string("array");
+		cvd->name = vd->name;
+		cvd->cvd  = new VarData();
+		*cvd->cvd = *vd;
+		*vd = *cvd; 
+	}
+	void funcion(VarData * vd){
+		VarData * cvd = new VarData();
+		cvd->kind =1;
+		cvd->type = new string("function");
+		cvd->name = vd->name;
+		cvd->cvd  = new VarData();
+		*cvd->cvd = *vd;
+		*vd = *cvd; 
+	}
+	void puntero(VarData * vd){//puntero
+		//vd->kind=2;
+		VarData * cvd = new VarData();
+		cvd->kind = 0;
+		cvd->type = new string("puntero");
+		cvd->name = vd->name;
+		cvd->cvd  = new VarData();
+		*cvd->cvd = *vd;
+		*vd = *cvd; 
+	}
+	void dump(VarData * vd,int d){
+		for (int i = 0; i < d;i++)
+		{
+			cout<<" "; 
+		}
+		cout<<"name: "<<*vd->name<<", tipo: "<<*vd->type<<", kind: "<<vd->kind<<endl; 
+		if(vd->cvd!=NULL){
+			dump(vd->cvd,++d);
+		}
+	}
+	VarData* last(VarData * vd){//importante
+		
+		if(vd->cvd==NULL){
+			return vd;
+		}else{
+			return last(vd->cvd);
+		}
+
+	}
+ void LexString(string *lex){
+         *lex = *new string(string(coco_string_create_char(t->val)));
+         //cout<<" ft "<<ft->c_str()<<endl;
+         //lex->append(*ft);
+         //*lex = *ft;
+  }
+
+ CHARACTERS
+  whiteSpace = ' ' + '\t' + '\r' +'\n'.
+ digit = "0123456789" .
+ letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_" .
+ TOKENS
+ number = digit { digit } .
+ name = letter { letter } .
+ IGNORE whiteSpace
+ PRODUCTIONS
+
+//int ** a
+//**a:int
+ Pro = {VarDecl|FuncDecl}.
+
+
+	VarDecl = (.   
+	 	int c_declaraciones = 0;
+	 	VarData ** declaraciones = (VarData**)malloc(sizeof(VarData*)*100);
+	 	string * Tipe = new string(""); .)
+	 		 
+ 			
+			//":"
+			(.VarData * vd = new VarData();.)
+			VarDcl<vd> (.declaraciones[c_declaraciones++]=vd;.)
+			{
+				(. vd = new VarData();.)
+				","
+				VarDcl<vd> 
+				(.declaraciones[c_declaraciones++]=vd;.)
+			} 
+			":"
+			(
+			name (. Tipe = new string(""); LexString(Tipe);
+				 cout << " " << *Tipe << endl<<endl; 
+
+			//declaraciones[c_declaraciones++]=vd;
+			for (int i = 0; i < c_declaraciones; i++)
+				{
+					last(declaraciones[i])->name = declaraciones[i]->name;
+					last(declaraciones[i])->type = Tipe;
+				}
+				//tab->insert(vd->name,vd)
+			//dump(vd,0);
+			.))
+ 			 
+ 			(.
+ 				for (int i = 0; i < c_declaraciones; i++)
+ 				{
+ 					dump(declaraciones[i],0);
+ 				}
+ 			.)
+			/*{","
+				(.VarData * vd = new VarData();.)
+				VarDcl<vd> (. 
+					cout << " " << *Tipe << endl<<endl; 
+					last(vd)->name = vd->name;
+					last(vd)->type = Tipe;
+						
+	 				//tab->insert(vd->name,vd)
+					dump(vd,0);
+			 	.)
+			}*/
+
+
+		.
+
+	VarDcl<VarData *vd>  = 
+ 		("*") 
+ 		VarDcl<vd> (.  cout << " puntero a";.)
+ 		(.
+ 			puntero(last(vd));
+ 		.)
+ 		| VarDirectDcl<vd> .
+
+	VarDirectDcl<VarData *vd> = (. string * Name = new string("");; .)
+			 ( name (. LexString(Name);
+			 cout <<endl<< " " << *Name << " es"; 
+			 vd->name=Name;
+			 .)
+			 | "(" VarDcl<vd> ")"
+			 ) {  VarSuffix<vd> } .
+
+	VarSuffix<VarData *vd>  = (.VarData * vdp = new VarData(); string * buff = new string(""); .)
+		 "[" (. cout << " array ["; .)
+			 [ number (. LexString(buff);
+			 cout << atoi(buff->c_str()); .)
+			 ]
+		 "]" (. _array(last(vd)); cout << "] de"; .)
+		 | (..)"(" [VarDecl{","VarDecl}] ")" (.funcion(last(vd));;cout << " function q retorna"; .) .
+
+
+///////////////////
+	FuncDecl = (. string * Tipe = new string(""); int anon = 1;.)
+ 		 
+			"func" (.  cout << " fun "; .)
+			//["[" ("="|"=="|"!="|">"|">="|"<"|"<=") "]"] // para metodos
+			[name
+			(. anon=0; Tipe = new string(""); LexString(Tipe);  .) ]
+			
+			(. if(anon==1){
+				cout<<" anonima retorna "<<*Tipe<<" " ;
+			}else{
+				cout<<*Tipe<<" retorna "; 
+			} .)
+			
+			["(" [VarDecl{","VarDecl}] ")" ]
+			[FuncDcl]
+			":"
+ 			name (.  Tipe = new string(""); LexString(Tipe); cout<< *Tipe << endl; .) 
+		 	"{"
+		 		(.string *Name = new string("");   .)Expr<Name>
+		 	"}"
+
+		 .
+
+ 	FuncDcl  =
+ 		{"*" FuncDcl (. cout << " puntero a"; .) | } 
+ 		| FuncDirectDcl .
+
+ 	FuncDirectDcl = (. string * Name = new string(""); cout<<""; .)
+			 ( "(" FuncDcl ")"
+			 ) { FuncSuffix } .
+
+ 	FuncSuffix  = (. string * buff = new string(""); .)
+		 "[" (. cout << " array ["; .)
+		 [ number (. LexString(buff);
+		 cout << atoi(buff->c_str()); .)
+		 ]
+		 "]" (. cout << "] de"; .)
+		 | "(" [VarDecl{","VarDecl}] ")" (. cout << " function q retorna"; .) .
+ 
+	Expr<string *n> = {
+		Factor<n> 
+	}.
+	Factor<string *n> = 
+		(name (. LexString(n); cout<<" load "<<*n<<endl; .) 
+		|"&"Factor<n> (.  cout<<" referenciar "<<*n<<endl; .) // al refenciar el embuelve en un puntero 
+		|"*"Factor<n> (.  cout<<" desreferenciar "<<*n<<endl; .) 
+		|"["number"]" (.  cout<<" desreferenciar "<<*n<<endl; .) 
+		|"."Factor<n> (.  cout<<" acceder "<<*n<<endl; .) 
+		| "("Expr<n>")" 
+		|FuncDecl 	  (. *n=*new string(" function declarada "); .))
+		{ FuncParams (. cout << " call "<<*n<<endl; *n=*new string(" resultado de funcion "); .) }
+
+		.
+	FuncParams  = (. string * buff = new string(""); .)
+		"(" [Expr<buff>{","Expr<buff>}] ")"  .
+
+END Pro.
+

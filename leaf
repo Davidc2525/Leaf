@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+
+#Compilador temporal de lenguaje de programacion leaf
+#Autor: Colmenares David
+
+function imprimir_mensaje(){
+
+    echo "Compilador de lenguaje de programacion Leaf."
+    echo "Uso:"
+    echo "  leaf [programa] [OPCIONES]"
+    echo ""
+    echo "OPCIONES:"
+    echo "  -r [-nd]    Ejecuta el programa una vez compilado"
+    echo "  -o <out>    Lugar donde se guardara el programa ejecutable"
+    echo "  -nd         No eliminar el programa de salida luego de ejecutar"
+    echo "  -m <32|64>  Arquitectura de salida"
+    echo "  -c          Ensambla y compila programa ASM"
+    echo "  -h          Imprime este mensaje"
+    echo ""
+    echo "Autor:"
+    echo " David25pcxtreme@gmail.com"
+
+}
+
+if [ $# = 0 ]; then
+    imprimir_mensaje
+    exit 1
+fi
+
+PROGRAM=$1
+TMP_ASM="test/out/leaf.asm" 
+ARCH="-m64"
+ARCH_NASM="elf64"
+OUTPUT="test/out/a.out"
+RUN=0
+ONLYNASM=0
+NODELETE=0
+
+#parse arch
+u=0
+x=1
+for a in $@; do  
+    if [ $a = "-m" ]; then 
+        u=`echo $x+1|bc`
+    fi 
+    x=`echo $x+1|bc`
+done
+x=1
+for a in $@; do  
+    if [ $x = $u ]; then 
+        ARCH="-m"$a
+        ARCH_NASM="elf"$a
+    fi 
+    x=`echo $x+1|bc`
+done
+#parse arch
+
+
+#parse output
+u=0
+x=1
+for a in $@; do  
+    if [ $a = "-o" ]; then 
+        u=`echo $x+1|bc`
+    fi 
+    x=`echo $x+1|bc`
+done
+x=1
+for a in $@; do  
+    if [ $x = $u ]; then 
+        OUTPUT=$a
+       #echo $OUTPUT
+    fi 
+    x=`echo $x+1|bc`
+done
+#parse output
+
+
+#parse if run
+u=0
+x=1
+for a in $@; do  
+    if [ $a = "-r" ]; then 
+        RUN=1
+    fi 
+    x=`echo $x+1|bc`
+done
+#parse if run
+
+#parse out help
+u=0
+x=1
+for a in $@; do  
+    if [ $a = "-h" ]; then 
+        imprimir_mensaje
+        exit 0
+    fi 
+    x=`echo $x+1|bc`
+done
+#parse if run
+
+#parse no delete
+u=0
+x=1
+for a in $@; do  
+    if [ $a = "-nd" ]; then 
+        NODELETE=1
+    fi 
+    x=`echo $x+1|bc`
+done
+#parse no delete
+
+#parse compilar solo el asm
+u=0
+x=1
+for a in $@; do  
+    if [ $a = "-c" ]; then 
+        ONLYNASM=1
+        if [ $1 != "" ]; then
+            if [ $1 != "-c"  ];then
+                TMP_ASM=$1
+                #echo $TMP_ASM
+            fi
+        fi
+        
+    fi 
+    x=`echo $x+1|bc`
+done
+#parse compilar solo el asm
+
+if [ $ONLYNASM = 0 ]; then
+    ./leafc $PROGRAM > $TMP_ASM    
+fi
+
+if [ 1 = 1 ]; then
+
+    nasm -f $ARCH_NASM $TMP_ASM
+
+    gcc -c test/lib.c -o test/out/lib.o $ARCH
+
+    gcc test/out/leaf.o test/out/lib.o $ARCH -o $OUTPUT
+
+    #rm test/out/leaf.o
+
+    #rm test/out/leaf.asm
+
+    if [ $RUN = 1 ]; then
+        ./$OUTPUT
+        if [ $NODELETE = 0 ]; then
+            rm $OUTPUT
+        fi
+    fi
+
+fi

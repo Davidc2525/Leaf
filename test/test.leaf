@@ -1,0 +1,43 @@
+//extern func david(*(a)():int,*:string)*()():int;
+/**
+
+extern func pun(*:int)*:int;
+extern func suma(:int,:int):int;
+extern func mod(:int,:int):int;
+extern func promedio3c(:int,:int,:int):int;
+extern func escribirln(:string):int;
+extern func csmc( ()():string ):int;
+extern func sleep(:int):void;
+extern func exit(:int):void;
+extern func ggg() ()():int;
+extern func print_float(:float,:float):void;
+
+func nc *:int{
+	*b,a:int;
+	a=50;
+	b=&a;
+	ret b;
+} 
+
+func csm( (mc)():string ):int{
+	ret escribirln(mc());
+}
+
+func promedio3(a:int,b:int,c:int):int{
+	print("promedio3 = ");
+	print((a+b+c)/3);
+	ret (a+b+c)/3;
+}
+
+func m:string{
+	ret "hola mundo desde M";
+} */
+
+func main:int{
+	
+	flo:float;
+
+	flo = 2.59+2.5+20.0;
+
+	ret 0;
+}

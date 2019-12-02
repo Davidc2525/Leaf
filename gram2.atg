@@ -1,0 +1,289 @@
+  #include <stdlib.h>
+  #include <iostream>
+  #include "../tree.h"
+  
+  
+  
+
+  #include "../compiler/symb_tab/symbol_table.h"
+  using namespace std;
+   COMPILER DvLang
+
+   symbol_table * tab;
+   
+   
+  void LexString(string *lex){
+    string * ft = new string("");
+    ft->append(string(coco_string_create_char(t->val)));
+    //cout<<" ft "<<ft->c_str()<<endl;
+    lex->append(*ft);
+  }
+
+  void LexStringla(string *lex){
+    string * ft = new string("");
+    ft->append(string(coco_string_create_char(la->val)));
+    //cout<<" ft "<<ft->c_str()<<endl;
+    lex->append(*ft);
+  }
+  void LexStringtoken(Token*to,string *lex){
+    string * ft = new string("");
+    ft->append(string(coco_string_create_char(to->val)));
+    //cout<<" ft "<<ft->c_str()<<endl;
+    lex->append(*ft);
+  }
+
+  bool isVarDecl(){
+    scanner->ResetPeek();
+    string*n = new string("");
+    string*n2 = new string(":");
+    Token* x = la;
+    LexStringtoken(x,n);
+     // cout<<"t: "<<*n<<" = "<<(*n2==*n)<<endl;
+    
+    if(*n2==*n) {scanner->ResetPeek(); return true;}
+    while(1){
+      n = new string("");
+      x = scanner->Peek();//la
+      LexStringtoken(x,n);
+      //cout<<"la: "<<*n<<" = "<<(*n2==*n)<<endl;
+    if(*n2==*n) {scanner->ResetPeek();return true;}
+    if(*n=="") {scanner->ResetPeek();return false;}
+    }
+   scanner->ResetPeek();
+   return false;
+  }
+
+CHARACTERS
+
+    tab           = '\u0009'. /*  9 = tabulator */
+    lf            = '\u000a'. /* 10 = line feed */
+    cr            = '\u000d'. /* 13 = carriage return */
+
+   //letter = 'a'..'z' + 'A'..'Z'.
+   //digit = '0'..'9'.
+   whiteSpace = ' ' + '\t' + '\r' +'\n'.
+   char = ANY - "'" - '\\' - whiteSpace.
+
+   stringChar    = ANY - "\"" - '\\' - cr - lf.
+
+   zero          = '0'.
+   zeroToThree   = zero + "123" .
+   octalDigit    = zero + "1234567" .
+   nonZeroDigit  = "123456789".
+   digit         = '0' + nonZeroDigit .
+   hexDigit      = digit + "ABCDEFabcdef" .
+   letter        = 'A' .. 'Z' + 'a' .. 'z' + '_' + '$'.
+   binary        = "1"+"0".
+   
+TOKENS
+
+ident = letter {letter | digit | "_" }.
+number = digit {digit}.
+
+charConst = "'" char "'". //including '\r', '\t', '\n
+stringConst =
+    "\"" { stringChar
+         | "\\" ( "b" | "t" | "n" | "f" | "r" | "\"" | "\'" | "\\"
+                | "u" { "u" } hexDigit hexDigit hexDigit hexDigit
+                | zeroToThree [ octalDigit ] [ octalDigit ]
+                | octalDigit [ octalDigit ]
+                )
+         }
+    "\"".
+
+floatLit =
+    "." digit {digit}
+    [("e" | "E") ["+" | "-"] digit {digit}]
+    [ "F" | "f" | "D" | "d" ]
+  | digit {digit}
+    ( "." {digit}
+      [("e" | "E" ) ["+" | "-"] digit {digit} ]
+      [ "F" | "f" | "D" | "d" ]
+    | ("e" | "E") ["+" | "-"] digit {digit}
+      [ "F" | "f" | "D" | "d" ]
+    | "F" | "f" | "D" | "d"
+    ).
+binaryLit = "0b"binary{binary|"_"}.
+   // number   = digit { digit } .
+    //variable = letter {letter}.
+    
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO "\n"
+  
+IGNORE whiteSpace
+
+PRODUCTIONS
+
+    DvLang = {FuncDecl|ModuloDecl|DesignDecl|StatementSeq}.
+    
+    /*Sentencias*/
+    StatementBlock 
+    = "{"{StatementSeq}"}".
+
+    StatementSeq
+    = Statement {"," Statement} .
+   
+    Statement  (. AST E; .)
+    = 
+        "if" "("Expression<E>")" StatementBlock ["else" StatementBlock]
+      | "while" "("Expression<E>")" StatementBlock 
+      //| ModuloDecl
+      | ( IF(isVarDecl()) VarDecl
+         |Designator<E> ("=" Expression<E> | {ActPars<E>})
+        )
+      | FuncDecl
+      | "ret" [Expression<E>]
+      | "new"  Designator<E>ActPars<E>
+      | "println" "("Expression<E>")"
+    . 
+
+    /*Declaraciones
+     int (*d)() ->  d: int(*)()
+     int * a -> a:int*
+    
+    Decl = { name Dcl ";" } .
+    Dcl  = "*" Dcl|DirectDcl.
+    DirectDcl = (ident | "(" Dcl ")") {Suffix}.
+    Suffix(.int n =0;.) = "("")"|"["[Number<n>]"]".
+  
+   */
+
+    FormPars = (. string *CH =new string("");  .)
+       Identifier<CH> Type {"," Identifier<CH> Type } .
+
+    ActPars<AST &E>
+      = "(" [  Expression<E> {"," Expression<E> } ] ")".
+
+    Type (. string *CH =new string(""); int n=0; .)
+    =
+      ":" Identifier<CH> ["["[Number<n>]"]"{"["[Number<n>]"]"}].
+
+    VarDecl (. string *CH =new string("");  AST E; .)
+    =
+      Identifier<CH> {","Identifier<CH> } Type ["=" Expression<E> {"," Expression<E>} ].
+
+
+    FuncDecl (. string *CH =new string(""); Struct * ft = new Struct(1); .)
+    =
+      //["@""externa""(" FuncExternLangs ")"]
+      "fun"  Identifier<CH> (.tab->pushCurrMethod(symbol_table::insert(9,CH,ft) );tab->openScope(); .)"(" [FormPars]")"
+      [Type]
+
+      StatementBlock (. tab->closeScope(); .)
+    .
+
+    DesignDecl (. string *CH =new string(""); .)
+    =
+      (
+        "dis"
+        |"diseño"
+      ) 
+       Identifier<CH>
+      "{"
+        {
+          "fun"  Identifier<CH> "("[FormPars]")"
+          [Type]
+        }
+      "}"
+    .
+
+    ModuloDecl (. string *CH =new string(""); .)
+    =
+      (
+        "mod"
+        |"modulo"
+      ) 
+      Identifier<CH> [["extencion" Identifier<CH> ]"modelo" Identifier<CH> {Identifier<CH>}]
+      StatementBlock
+    .
+
+
+    /*Expresiones*/
+    Expression<AST &E>
+    = SimExpression<E>{","SimExpression<E>}.
+
+    SimExpression<AST &E>
+    = BitShiffOp<E>.
+    
+    BitShiffOp<AST &E>
+    =                          (. AST T;  .)
+      BitAndOrOp<E>
+      {   "<<" BitAndOrOp<T>          (. E = BinOpNode(BitShiftL, E, T); .)
+        | ">>" BitAndOrOp<T>          (. E = BinOpNode(BitShiftR, E, T); .)
+      } .
+
+    BitAndOrOp<AST &E>
+    =                          (. AST T;  .)
+      ["~"] AndOrOp<E>
+      {   "&" AndOrOp<T>          (. E = BinOpNode(BitAnd, E, T); .)
+        | "|" AndOrOp<T>          (. E = BinOpNode(BitOr, E, T); .)
+        | "^" AndOrOp<T>          (. E = BinOpNode(BitXor, E, T); .)
+      } .
+
+    AndOrOp<AST &E>
+    =                          (. AST T;  .)
+      RelaOp<E>
+      {   "&&" RelaOp<T>          (. E = BinOpNode(And, E, T); .)
+        | "||" RelaOp<T>          (. E = BinOpNode(Or, E, T); .)
+      } .
+        
+    RelaOp<AST &E>
+    =                          (. AST T;  .)
+      AddOp<E>
+      {   "==" AddOp<T>          (. E = BinOpNode(Eq, E, T); .)
+        | "!=" AddOp<T>          (. E = BinOpNode(Neq, E, T); .)
+        | ">"  AddOp<T>          (. E = BinOpNode(Gtr, E, T); .)
+        | ">=" AddOp<T>          (. E = BinOpNode(GtrEq, E, T); .)
+        | "<"  AddOp<T>          (. E = BinOpNode(Less, E, T); .)
+        | "<=" AddOp<T>          (. E = BinOpNode(LessEq, E, T); .)
+      } .
+        
+    AddOp<AST &E>
+    =                          (. AST T;  .)
+      Term<E>
+      {   "+" Term<T>          (. E = BinOpNode(Plus, E, T); .)
+        | "-" Term<T>          (. E = BinOpNode(Minus, E, T); .)
+      } .
+        
+    
+   Term<AST &T>
+    =                          (. AST F; .)
+      Factor<T>
+      {   "*" Factor<F>        (. T = BinOpNode(Times, T, F); .)
+        | "/" Factor<F>        (. T = BinOpNode(Slash, T, F); .)
+        | "%" Factor<F>        (. T = BinOpNode(Mod, T, F); .)
+      } .
+  Factor<AST &F>
+    =                          (. string * CH = new string(""); int N=0;   F = EmptyNode(); .)
+                               (..)
+    (  // Identifier<CH>         (. F = VarNode(CH); .)
+      Designator<F>  [{ActPars<F>}]
+      | "new"  Designator<F>ActPars<F>
+      | Number<N>              (. F = ConstNode(N); .)
+      | "["[Factor<F>]{","[Factor<F>]}"]"  (. F = ConstNode(N); .)
+      | ("!"|"-") Factor<F>
+      | "(" Expression<F> ")"
+    ) .
+
+    Designator<AST &E>  (. string * CH = new string(""); E = EmptyNode();.)
+    = 
+     //{ Identifier<CH> "."}  Identifier<CH> 
+       Identifier<CH>   (. E = VarNode(CH); .)
+       {
+        "."
+        Identifier<CH>   (. E = VarNode(CH); .)
+       }.
+   
+    
+    Identifier<string * CH>         (.     .)
+    =  ident                  (. string * str = new string("");
+                                    LexString(str);
+                                    *CH= *str ; .) .
+    Number<int &N>               (.    .)
+    =  number                    (.string * str = new string("");
+                                    LexString(str);
+                                    N = atoi(str->c_str());  .) .
+
+    //FuncExternLangs 
+    //= ("c"|"c++"|"java"|"python"|"go"|"rust"|"dart").
+  END DvLang.
