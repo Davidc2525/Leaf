@@ -5,12 +5,12 @@
 #define NOIMPLEMENT                        \
     cout << "Sin implementacion." << endl; \
     exit(1);
-#define log(s, e) \
-                  \
-    cout << s     \
-         << endl; \
-                  \
-    if (e != 0)   \
+#define llog(s, e) \
+                   \
+    cout << s      \
+         << endl;  \
+                   \
+    if (e != 0)    \
         exit(e);
 
 #if (defined(DEBUG) && (DEBUG == true))
@@ -20,6 +20,7 @@
 #endif
 #include <map>
 #include <string.h> // this is for strcpy
+#include <vector>
 
 using namespace std;
 
@@ -144,12 +145,79 @@ public:
     map<string, string *> string_lits;
 };
 
+enum EffectiveType
+{
+   Reg,
+   Num
+};
+
+enum EffectivePartLoadMode
+{
+    Sub,
+    Add,
+    Mul,
+    Div
+};
+const char *modoToString(EffectivePartLoadMode mode);
+
+class EffectivePart
+{
+public:
+    EffectivePart();
+    EffectivePart(int);
+    EffectivePart(int, EffectiveType);
+    EffectivePart(int, EffectivePartLoadMode);
+    EffectivePart(int, EffectiveType,EffectivePartLoadMode);
+    int load;
+    EffectivePartLoadMode mode = Add;
+    EffectiveType type = Reg;
+};
+
+class EffectiveAddr
+{
+public:
+    EffectiveAddr(){};
+    // bool withDir = false;
+    bool withBp = false;
+    //int count = 0;
+    //int *regs = nullptr;
+    //vector<EffectivePart *> regis;
+    //vector<EffectivePart *> addrs;
+    vector<EffectivePart *> parts;
+    //int dir;
+    /**
+     * 
+    */
+    char *toString();
+};
+
+class LoadOpt
+{
+public:
+    LoadOpt() { effectivea = new EffectiveAddr; };
+    int reg = -1;
+    EffectiveAddr *effectivea = nullptr;
+    EffectiveAddr *secundary_effectivea = nullptr;
+};
+
+class StoreOpt
+{
+public:
+    StoreOpt() { aefective = new EffectiveAddr; };
+    int dir = -1;
+    EffectiveAddr *aefective = nullptr;
+};
+
+class OpResult
+{
+    int reg = -1;
+};
 class NODE;
 class STAT;
 class BLOCK;
 class EXPR;
-typedef NODE *AST;
-
+typedef ::NODE *AST;
+ 
 class NODE
 { //friend AST BinOpNode(optypes op, AST left, AST right);
     //friend class BINOPNODE;
@@ -170,6 +238,9 @@ public:
     LoadStorePlace loadPlace = LoadStorePlace::REG;
     LoadStorePlace storePlace = LoadStorePlace::MEMO;
 
+    LoadOpt *loadOpt = new LoadOpt();
+    StoreOpt *storeOpt = new StoreOpt;
+    OpResult *opResult = new OpResult;
 
     virtual void operation(optypes O, int R) = 0;
     virtual void loadreg(int R) { dlog("LOAD REG EMPTY", 0); }
@@ -186,7 +257,7 @@ class STAT : public EXPR
 class BLOCK : public STAT
 {
 public:
-    virtual void add(AST E){};
+    virtual void add(AST E)=0;
 };
 
 class AstHandler
@@ -204,6 +275,8 @@ public:
     virtual Obj *GetObjOfNode(NODE *n){NOIMPLEMENT};
     virtual void SetObjOfNode(NODE *n, Obj *o){NOIMPLEMENT};
     //expre
+    virtual AST MemberNode(AST obj, AST propery){NOIMPLEMENT};
+
     virtual AST BinOpNode(optypes op, AST left, AST right){NOIMPLEMENT};
     // Creates an AST for the binary operation "left op right"
     virtual AST VarNode(string *name){NOIMPLEMENT};

@@ -235,6 +235,7 @@ floatLit =
 binaryLit = "0b"binary{binary|"_"}.
 
 COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "(*" TO "*)" NESTED
 COMMENTS FROM "//" TO "\n"
   
 IGNORE whiteSpace
@@ -277,7 +278,7 @@ PRODUCTIONS
  	 	//|Expr<stat>
  		|FuncDecl<stat>
  		|"print" "(" Expr<e_stat> ")"";" (. stat = ast_h->CreatePrintNode(e_stat);.)
- 		
+ 		|"sizeof" "(" Expr<e_stat> ")"
  		|"ret"  (Expr<e_stat> (. 
  				if(!sreq(symbol_table::currMethod()->type->elemType,ast_h->GetObjOfNode(e_stat)->type)){cout<<";El valor q retorna no coincide con la firma. "<<*symbol_table::currMethod()->name<<endl; exit(1);}
  				stat = ast_h->ReturnNode(e_stat); ast_h->SetObjOfNode(stat,ast_h->GetObjOfNode(e_stat)); 
@@ -381,7 +382,7 @@ PRODUCTIONS
  		 
 
 			["extern" (.extern_s = true;.)] 
-			"func" (.  cout << "; fun "; .)
+			"fun" (.  cout << "; fun "; .)
 			//["[" ("="|"=="|"!="|">"|">="|"<"|"<=") "]"] // para metodos
 			[name
 			(. anon=0; FName = new string(""); LexString(FName);  .) ]

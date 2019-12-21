@@ -1,15 +1,28 @@
+/** 
+ * @author Colmenares David [david25pcxtreme@gmail.com]
+ * */
 
 #include "register.hpp"
 
 Register::Register(){
 
 };
+
 Register::Register(int id, string *name, int bits, string *word)
 {
     this->id = id;
     this->name = name;
     this->bits = bits;
     this->word = word;
+};
+
+Register::Register(int id, string *name, int bits, string *word, bool reservable)
+{
+    this->id = id;
+    this->name = name;
+    this->bits = bits;
+    this->word = word;
+    this->reservable = reservable;
 };
 
 const char *Register::getName()

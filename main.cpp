@@ -1,20 +1,26 @@
-//cococpp gramatica.atg -frames ./frames -o ./parser
-// g++ -std=c++11 main.cpp -o main
 
-#include <string>
+/**
+ * @author Colmenares David [david25pcxtreme@gmail.com]
+ * */
+
+#include <string.h>
 #include <iostream>
+#include "assembly/assembly"
+#include "ast/ast.hpp"
+#include "compiler/backend/x86_64_linux/generator.h"
 #include "tree.hpp"
 #include "parser/Parser.h"
 #include "parser/Scanner.h"
 #include "threeFactory.hpp"
 #include "compiler/symb_tab/symbol_table.hpp"
-#include "AstHandlerLinuxX86_64.hpp"
+//#include "AstHandlerLinuxX86_64.hpp"
 #include "stdio.h"
 #include <sys/timeb.h>
 #include <wchar.h>
 #include "compiler/registers/register_manager.hpp"
 #include "compiler/registers/x86_64_register_provider.hpp"
 #include "compiler/registers/x86_32_register_provider.hpp"
+#include "compiler/backend/x86_64/x86_64.hpp"
 
 #define clog(s, e)     \
     cout << s << endl; \
@@ -28,6 +34,7 @@
 #endif
 
 using namespace std;
+using namespace std::rel_ops;
 
 string *label_of_function(Obj *f)
 {
@@ -73,7 +80,22 @@ string *label_of_function(Obj *f)
 int main(int argc, char **argv)
 {
 
-    /*if(argc<2){
+    auto a = new Assembly(new Program());
+
+    DInstruccion *i = new DInstruccion("mov");
+    MemoryOperand *mo = new MemoryOperand;
+    mo->add_operand(new RegisterOperand("rbp"));
+    mo->add_operand(new InmediateIntOperand(8));
+    i->add_operand(mo);
+    i->add_operand(new RegisterOperand("rax"));
+
+    a->get_program()->section(Sections::text)->add(new Label("main"));
+    //for (int x = 0; x < 1000000; x++)
+    a->get_program()->section(Sections::text)->add(i);
+    ofstream *out = new ofstream("pro.asm");
+
+    a->get_program()->write(*out);
+    /*if(argc<2){ 
         log("falta el archivo de programa",1)
     }
     string filename(args[1]);
@@ -90,7 +112,7 @@ int main(int argc, char **argv)
     try
     {
         Register *r = rp->reserve();
-      
+        rp->free(r->id);
     }
     catch (const char *ex)
     {
@@ -103,8 +125,9 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    ThreeFactory::getInstance()->addAstHandler(new AstHandler);
-    int handler = ThreeFactory::getInstance()->addAstHandler(new CODE_GENERATOR::x86_64::AstHandlerLinuxX86_64);
+    //ThreeFactory::getInstance()->addAstHandler(new AstHandler);
+    //int handler = ThreeFactory::getInstance()->addAstHandler(new CODE_GENERATOR::x86_64::AstHandlerLinuxX86_64);
+    //int handler = ThreeFactory::getInstance()->addAstHandler(new CODE_GENERATOR::x86_64::x86_64Linux);
 
     if (argc == 2)
     {
@@ -112,12 +135,19 @@ int main(int argc, char **argv)
         Scanner *scanner = new Scanner(fileName);
         Parser *parser = new Parser(scanner);
         parser->tab = new symbol_table();
-        parser->ss = new ExternSymbols();
-        parser->sl = new StringLiterals();
+        //parser->ss = new ExternSymbols();
+        //parser->sl = new StringLiterals();
+        ast_visitor_args *args = new ast_visitor_args;
+        args->ass = new Assembly(new Program()); 
+        args->outfile = new string("tmp_pro_leaf_asm.asm");
+
+        parser->data_section = args->ass->get_program()->section(Sections::data);
+        parser->visitor_generator =
+            new x86_64_linux_generator_visitor(args);
 
         try
         {
-            parser->ast_h = ThreeFactory::getInstance()->getAstHandler(handler);
+            //parser->ast_h = ThreeFactory::getInstance()->getAstHandler(handler);
         }
         catch (char const *ex)
         {

@@ -1,43 +1,49 @@
-//extern func david(*(a)():int,*:string)*()():int;
+//extern fun david(*(a)():int,*:string)*()():int;
 /**
 
-extern func pun(*:int)*:int;
-extern func suma(:int,:int):int;
-extern func mod(:int,:int):int;
-extern func promedio3c(:int,:int,:int):int;
-extern func escribirln(:string):int;
-extern func csmc( ()():string ):int;
-extern func sleep(:int):void;
-extern func exit(:int):void;
-extern func ggg() ()():int;
-extern func print_float(:float,:float):void;
+extern fun pun(*:int)*:int;
+extern fun suma(:int,:int):int;
+extern fun mod(:int,:int):int;
+extern fun promedio3c(:int,:int,:int):int;
+extern fun escribirln(:string):int;
+extern fun csmc( ()():string ):int;
+extern fun sleep(:int):void;
+extern fun exit(:int):void;
+extern fun ggg() ()():int;
+extern fun print_float(:float,:float):void;
 
-func nc *:int{
+fun nc *:int{
 	*b,a:int;
 	a=50;
 	b=&a;
 	ret b;
 } 
 
-func csm( (mc)():string ):int{
+fun csm( (mc)():string ):int{
 	ret escribirln(mc());
 }
 
-func promedio3(a:int,b:int,c:int):int{
+fun promedio3(a:int,b:int,c:int):int{
 	print("promedio3 = ");
 	print((a+b+c)/3);
 	ret (a+b+c)/3;
 }
 
-func m:string{
+fun m:string{
 	ret "hola mundo desde M";
 } */
 
-func main:int{
+(*comentario q no es decoloreado
+	//para la declaracion de variables
 	
-	flo:float;
+	fun main:int{
+		a,b,r,*rp:int = 20,5,a+b,&r;
+	}
+*)
 
-	flo = 2.59+2.5+20.0;
 
-	ret 0;
+
+fun main:int{
+	a,b,c:int;
+	b = (c+a)+(b+a)+(a+b);
 }

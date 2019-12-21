@@ -1,0 +1,608 @@
+
+ #include <stdlib.h>
+ #include <cstring>
+
+ #include "../ast/ast.hpp"
+ #include "../compiler/backend/visitor.h"
+ #include "../compiler/symb_tab/symbol_table.hpp"
+ //#include "../tree.hpp"
+ #include <iostream>
+ using namespace std;
+ COMPILER Pro
+ symbol_table *tab;
+ int cout_annon_func = 0;
+class MetaData{
+
+public: 
+	bool isF = false;
+	Struct * type;
+	string * tmpName;
+	bool anon = true;
+	MetaData(){
+		type = new Struct();
+		tmpName = new string("");
+	}
+};
+	void _array(Struct * vd){
+		_array1(vd,0);
+	}
+	void _array1(Struct * vd,int size){
+		Struct * cvd = new Struct();
+		cvd->kind = Struct::Arr;;
+		cvd->elemType  = new Struct();
+		*cvd->elemType = *vd;
+		*vd = *cvd; 
+	}
+	void funcion(Struct * vd){
+		Struct * cvd = new Struct();
+		cvd->kind =Struct::Func;
+		cvd->elemType  = new Struct();
+		*cvd->elemType = *vd;
+		*vd = *cvd; 
+	}
+	void puntero(Struct * vd){//puntero
+		if(vd->kind == Struct::Func){
+			//return;
+		}
+		//vd->kind=2;
+		Struct * cvd = new Struct();
+		cvd->kind = Struct::Pointer;
+		cvd->elemType  = new Struct();
+		*cvd->elemType = *vd;
+		*vd = *cvd; 
+	}
+	void dump(Struct * vd,int d){
+		for (int i = 0; i < d;i++)
+		{
+			cout<<" "; 
+		}
+		cout<<";kind: "<<vd->kind<<endl; 
+		if(vd->elemType!=NULL){
+			dump(vd->elemType,++d);
+		}
+	}
+	Struct* last(Struct * vd){//importante
+		
+		if(vd->elemType==NULL){
+			return vd;
+		}else{
+			return last(vd->elemType);
+		}
+
+	}
+
+	void un_pointer(Obj*o){//desreferenciar
+		int np=o->nPars;
+		int adr=o->adr;
+		if(
+			(o->type->kind == Struct::Pointer ||
+			o->type->kind == Struct::Arr )
+			&& o->type->elemType!=NULL){
+			//*o=*new Obj(o->kind,o->name,o->type->elemType);
+			o->type = o->type->elemType;
+			//o->adr = adr;
+			//o->nPars=np;
+		}else{
+			cout<<";Error semnatico: "<<*o->name<<" no se puede desreferenciar."<<endl;
+			if(o->type->kind != Struct::Pointer){
+				cout<<"; no es un puntero"<<endl;
+			}
+			exit(1);
+		}
+	}
+
+	void make_ref(Obj*o){//referenciar
+			Obj  tmp = *o;
+			//*o = *new Obj();
+
+
+			o->type = new Struct();
+			o->type->kind = Struct::Pointer;
+			o->type->elemType = new Struct();
+			o->type->elemType = tmp.type;
+
+			/*o->kind = tmp.kind;
+			o->name = tmp.name;
+			o->nPars = tmp.nPars;
+			o->adr = tmp.adr;
+			o->locals = tmp.locals;		*/
+	}
+
+	void unwrap_call_function(Obj*o){
+		int np=o->nPars;
+
+		if(o->type->kind == Struct::Func && o->type->elemType!=NULL){
+			string * return_name = o->name;
+			//return_name->append(o->name->c_str());
+			//*o=*new Obj(Obj::Var,return_name,o->type->elemType);
+			o->kind=Obj::Var;
+			o->type = o->type->elemType;
+			//o->nPars =np;
+		}else{
+			cout<<";Error semnatico: "<<*o->name;
+			if(o->type->kind != Struct::Func){
+				cout<<" no es funcion"<<endl;
+				dump(o->type,2);
+			}
+			exit(1);
+		}
+	}
+
+ void LexString(string *lex){
+         *lex = *new string(string(coco_string_create_char(t->val)));
+ }
+ void LexStringla(string *lex){
+    string * ft = new string("");
+    ft->append(string(coco_string_create_char(la->val)));
+    //cout<<"; ft "<<ft->c_str()<<endl;
+    lex->append(*ft);
+  }
+  void LexStringtoken(Token*to,string *lex){
+    string * ft = new string("");
+    ft->append(string(coco_string_create_char(to->val)));
+    //cout<<"; ft "<<ft->c_str()<<endl;
+    lex->append(*ft);
+  }
+ bool isVarDecl(){
+    scanner->ResetPeek();
+    string*n = new string("");
+    string*n2 = new string(":");
+    Token* x = la;
+    LexStringtoken(x,n);
+     // cout<<";t: "<<*n<<" = "<<(*n2==*n)<<endl;
+    
+    if(*n2==*n) {scanner->ResetPeek(); return true;}
+    while(1){
+    	nc:
+      n = new string("");
+      x = scanner->Peek();//la
+      LexStringtoken(x,n);
+      //cout<<";la: "<<*n<<" = "<<(*n2==*n)<<endl;
+    
+    if (*n=="["||*n=="]"||*n=="("||*n==")")
+    {
+    	//scanner->ResetPeek();return false;
+    }
+    if(*n2==*n) {scanner->ResetPeek();return true;}
+    if(*n=="") {scanner->ResetPeek();return false;}
+    if(*n=="=") {scanner->ResetPeek();return false;}
+    
+    //if(*n=="[") {scanner->ResetPeek();return false;}
+    //if(*n=="]") {scanner->ResetPeek();return false;}
+    }
+   scanner->ResetPeek();
+   return false;
+  }
+
+Section * data_section;
+//ExternSymbols*ss;
+//StringLiterals*sl;
+//AstHandler*ast_h;
+visitor * visitor_generator;
+
+CHARACTERS
+  whiteSpace = ' ' + '\t' + '\r' +'\n'.
+ letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZñÑabcdefghijklmnopqrstuvwxyz_" .
+   tab           = '\u0009'. /*  9 = tabulator */
+    lf            = '\u000a'. /* 10 = line feed */
+    cr            = '\u000d'. /* 13 = carriage return */
+
+   //letter = 'a'..'z' + 'A'..'Z'.
+   //digit = '0'..'9'.
+   char = ANY - "'" - '\\' - whiteSpace.
+
+   stringChar    = ANY - "\"" - '\\' - cr - lf.
+
+   zero          = '0'.
+   zeroToThree   = zero + "123" .
+   octalDigit    = zero + "1234567" .
+   nonZeroDigit  = "123456789".
+   digit         = '0' + nonZeroDigit .
+   hexDigit      = digit + "ABCDEFabcdef" .
+  // letter        = 'A' .. 'Z' + 'a' .. 'z' + '_' + '$'.
+   binary        = "1"+"0".
+
+TOKENS
+ t_pointer = "*".
+ t_r_pointer = "&".
+ number = digit { digit } .
+ name = letter { (letter |digit)} .
+charConst = "'" char "'". //including '\r', '\t', '\n
+stringConst =
+    "\"" { stringChar
+         | "\\" ( "b" | "t" | "n" | "f" | "r" | "\"" | "\'" | "\\"
+                | "u" { "u" } hexDigit hexDigit hexDigit hexDigit
+                | zeroToThree [ octalDigit ] [ octalDigit ]
+                | octalDigit [ octalDigit ]
+                )
+         }
+    "\"".
+
+floatLit =
+    "." digit {digit}
+    [("e" | "E") ["+" | "-"] digit {digit}]
+    [ "F" | "f" | "D" | "d" ]
+  | digit {digit}
+    ( "." {digit}
+      [("e" | "E" ) ["+" | "-"] digit {digit} ]
+      [ "F" | "f" | "D" | "d" ]
+    | ("e" | "E") ["+" | "-"] digit {digit}
+      [ "F" | "f" | "D" | "d" ]
+    | "F" | "f" | "D" | "d"
+    ).
+binaryLit = "0b"binary{binary|"_"}.
+
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "(*" TO "*)" NESTED
+COMMENTS FROM "//" TO "\n"
+  
+IGNORE whiteSpace
+
+PRODUCTIONS
+
+//int ** a
+//**a:int
+ Pro = (. ASTU b = block_stat(); .) 
+ 	SourceCode<b>
+ 	(. visitor_generator->init(b); .)
+ 	.
+ 	
+ 	SourceCode<ASTU&b_node> (.  .)
+ 		=
+ 		{(.ASTU stat;.)Statement<stat> (. block_add(b_node,stat);.)}
+ 		.
+ 	
+ 	StatementBLock<ASTU&b_node> (.  .) 
+ 		= "{"{(.ASTU stat;.)Statement<stat> (. block_add(b_node,stat); .)}"}".
+ 	
+ 	Statement<ASTU&stat> (.ASTU e_stat;.)
+ 	 =  ( IF(isVarDecl()) VarDecl ";"(. stat = empty_node(); .)
+ 	 		|Designator<stat> ("=" Expr<e_stat> 
+ 	 			(. 
+ 	 			if(!sreq(get_obj(stat)->type,get_obj(e_stat)->type)){
+ 	 				cout<<";error de asignacion, tipos diferentes."<<endl; 
+ 	 				dump(get_obj(stat)->type,2);
+					dump(get_obj(e_stat)->type,2);
+					exit(1);
+ 	 			}else{
+ 	 				stat = assign(stat,e_stat);
+ 	 				Obj*o = new Obj(1,new string(),new Struct()); 
+					set_obj(stat,o);
+ 	 			} 
+
+ 	 			.)
+ 	 			|ActParams<stat,false>)";"
+ 	 	)
+
+ 	 	//|Expr<stat>
+ 		|FuncDecl<stat>
+ 		|"print" "(" Expr<e_stat> ")"";" (. stat = print_node(e_stat);.)
+ 		|"sizeof" "(" Expr<e_stat> ")"
+ 		|"ret"  (Expr<e_stat> (. 
+ 				if(!sreq(symbol_table::currMethod()->type->elemType,get_obj(e_stat)->type)){cout<<";El valor q retorna no coincide con la firma. "<<*symbol_table::currMethod()->name<<endl; exit(1);}
+ 				stat = return_node(e_stat); set_obj(stat,get_obj(e_stat)); 
+ 				.)
+ 				| (.stat = return_node();.)
+ 			)";"
+ 		|"if""(" Expr<e_stat>  ")"  (. stat = if_node(e_stat); .) StatementBLock<stat>  ["else" StatementBLock<stat>]
+ 		|StatementBLock<stat>
+ 		|";"
+ 		.
+
+	VarDecl = (.   
+	 	int c_declaraciones = 0;
+	 	MetaData ** declaraciones = (MetaData**)malloc(sizeof(MetaData*)*100);
+	 	string * Tipe = new string(""); .)
+	 		 
+ 			
+			//":"
+			(.MetaData * md = new MetaData();.)
+			VarDcl<md> (.declaraciones[c_declaraciones++]=md;.)
+			{
+				(. md = new MetaData();.)
+				","
+				VarDcl<md> 
+				(.declaraciones[c_declaraciones++]=md;.)
+			} 
+			":"
+			(
+
+				
+					//"auto" (. cout<<";colocar tipo a variable de la exprecion"<<endl; .)
+					name (. Tipe = new string(""); LexString(Tipe);
+					
+						cout << " " << *Tipe << endl<<endl; 
+
+						for (int i = 0; i < c_declaraciones; i++)
+							{
+								
+								Struct * tmp = last(declaraciones[i]->type);
+								*tmp = *symbol_table::find(Tipe)->type;
+								
+							}
+					.)
+
+				
+			)
+ 			 
+ 			(.
+ 				for (int i = 0; i < c_declaraciones; i++)
+ 				{
+ 					
+ 					cout<<";adr: "<<symbol_table::insert(
+ 						Obj::Var,
+ 						declaraciones[i]->tmpName,
+ 						declaraciones[i]->type
+ 					)->adr<<endl;;
+
+ 					dump(declaraciones[i]->type,0);
+ 				}
+ 			.)
+	.
+
+	VarDcl<MetaData * md>  = 
+ 		t_pointer
+ 		VarDcl<md>
+ 		(.
+ 			cout << " puntero a";
+ 			puntero(last(md->type));
+ 		.)
+ 		| VarDirectDcl<md> .
+
+	VarDirectDcl<MetaData * md> = (. string * Name = new string("");; .)
+			 ( name (. LexString(Name);
+			 cout <<endl<< "; " << *Name << " es"; 
+			 md->tmpName=Name;
+			 .)
+			 | "(" VarDcl<md> ")"
+			 | (. cout <<endl<< "; noname " << " es";  .)
+			 ) {  VarSuffix<md> } .
+
+	VarSuffix<MetaData * md>  = (. string * buff = new string(""); .)
+		 "[" (. cout << " array ["; .)
+			 [ number (. LexString(buff);
+			 cout << atoi(buff->c_str()); .)
+			 ]
+		 "]" (. _array(last(md->type)); cout << "] de"; .)
+		 | "(" [VarDecl{","VarDecl}] ")" (. funcion(last(md->type)); md->isF = true; ;cout << " ;function q retorna"; .) .
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////
+	FuncDecl<ASTU&f_node> = (. 
+			int np=0; 
+			bool extern_s = false;
+			Obj *obj = new Obj();
+			MetaData *fd = new MetaData();
+			string * FName = new string("anonima_"); 
+			FName->append(to_string(++cout_annon_func).c_str()); 
+			string * Tipe = new string(""); 
+			int anon = 1;.)
+ 		 
+
+			["extern" (.extern_s = true;.)] 
+			"fun" (.  cout << "; fun "; .)
+			//["[" ("="|"=="|"!="|">"|">="|"<"|"<=") "]"] // para metodos
+			[name
+			(. anon=0; FName = new string(""); LexString(FName);  .) ]
+			
+			(. if(anon==1){
+				cout<<" anonima retorna "<<*Tipe<<" " ;
+			}else{
+				cout<<*FName<<" retorna "; 
+			} 
+
+			obj=symbol_table::insert(4,FName,new Struct()); 
+			 
+
+			 symbol_table::pushCurrMethod(obj); 
+			symbol_table::openScope(); 
+
+			.)
+			
+			["(" [VarDecl(.np++;.){","VarDecl(.np++;.)}] ")" ]
+			[FuncDcl<fd>]
+			":"
+ 			name (.  Tipe = new string(""); LexString(Tipe); *last(fd->type) = *symbol_table::find(Tipe)->type; cout<<";"<< *Tipe << endl; .) 
+		 	
+			(.
+			 funcion(fd->type); dump(fd->type,1); 
+			 
+			 obj->type = fd->type;
+			 (*obj).nPars = np;
+			 if(extern_s){
+			 		obj->_extern = true;
+			 		//ss->add(obj->name);
+			 }
+
+			 f_node = func_decl(FName);
+			 set_obj(f_node,obj);
+			 
+
+			
+			 cout<<";nPars "<<np<<endl;
+			 
+			 obj->nPars=np;;
+			 cout<<";nPars "<<obj->nPars<<endl;
+			 .)
+
+		 	(IF(!extern_s)StatementBLock<f_node>|";")
+		 	(.
+
+		 	 symbol_table::currMethod()->locals = symbol_table::curScope->locals;
+		 	 symbol_table::currMethod()->type->size = symbol_table::curScope->offset-8;
+		 	 .)
+		 	(. symbol_table::popCurrMethod(); .)
+		 	(. symbol_table::closeScope(); .) 
+
+		 .
+
+ 	FuncDcl<MetaData * fd>  =
+ 		(t_pointer FuncDcl<fd> (. cout << "; puntero a"; .) (.puntero(last(fd->type));.) ) 
+ 		| FuncDirectDcl<fd> .
+
+ 	FuncDirectDcl<MetaData * fd> = (. string * Name = new string(""); cout<<""; .)
+			 ( name
+			   |"(" FuncDcl<fd> ")" 
+			   |) 
+			 { FuncSuffix<fd> } .
+
+ 	FuncSuffix<MetaData * fd>  = (. string * buff = new string(""); .)
+		 "[" (. cout << " array ["; .)
+			 [ number (. LexString(buff);
+			 cout << atoi(buff->c_str()); .)
+			 ]
+		 "]" (. _array(last(fd->type));  cout << "] de"; .)
+		 | "(" [VarDecl{","VarDecl}] ")" (. funcion(last(fd->type)); cout << " ;function q retorna"; .) .
+////////////////////////////////////////////////////////// 
+	/*Expresiones*/
+	Expr<ASTU&e_node> = 
+		SimExpression<e_node>
+	.
+   
+
+	SimExpression<ASTU &E>
+    = BitShiffOp<E>.
+    
+    BitShiffOp<ASTU &E>
+    =                          (. ASTU T;  .)
+      BitAndOrOp<E>
+      {   "<<" BitAndOrOp<T>          (. E = bin_op(BitShiftL, E, T); .)
+        | ">>" BitAndOrOp<T>          (. E = bin_op(BitShiftR, E, T); .)
+      } .
+
+	BitAndOrOp<ASTU &E>
+    =                          (. ASTU T;  .)
+      ["~"] AndOrOp<E>
+      {   "&" AndOrOp<T>          (. E = bin_op(BitAnd, E, T); .)
+        | "|" AndOrOp<T>          (. E = bin_op(BitOr, E, T); .)
+        | "^" AndOrOp<T>          (. E = bin_op(BitXor, E, T); .)
+      } .
+
+    AndOrOp<ASTU &E>
+    =                          (. ASTU T;  .)
+      RelaOp<E>
+      {   "&&" RelaOp<T>          (. E = bin_op(And, E, T); .)
+        | "||" RelaOp<T>          (. E = bin_op(Or, E, T); .)
+      } .
+	RelaOp<ASTU &E>
+    =                          (. ASTU T;  .)
+      AddOp<E>
+      {   "==" AddOp<T>          (. E = bin_op(Eq, E, T); .)
+        | "!=" AddOp<T>          (. E = bin_op(Neq, E, T); .)
+        | ">"  AddOp<T>          (. E = bin_op(Gtr, E, T); .)
+        | ">=" AddOp<T>          (. E = bin_op(GtrEq, E, T); .)
+        | "<"  AddOp<T>          (. E = bin_op(Less, E, T); .)
+        | "<=" AddOp<T>          (. E = bin_op(LessEq, E, T); .)
+      } 
+    .
+        
+
+
+	AddOp<ASTU&t_node> = (. ASTU t_node_2; Obj*obj2 = new Obj(); op_types op; .)
+		Term<t_node> 
+		{(
+			"+"  (. op = Plus; .)
+			|"-" (. op = Minus; .)
+			
+		  )Term<t_node_2>  (.  t_node = bin_op(op,t_node,t_node_2);.)
+		} 
+	.
+
+	Term<ASTU&t_node> = (. ASTU t_node_2; Obj*obj2 = new Obj(); op_types op; .)
+		Factor<t_node> 
+		{(
+			"*"  (. op = Times; .)
+			|"/" (. op = Slash; .)
+			|"%" (. op = Mod; .)
+		  )Factor<t_node_2>  (.  t_node = bin_op(op,t_node,t_node_2); .)
+		} 
+	.
+
+	
+	Factor<ASTU&f_node> = (. Obj* obj = new Obj(); string * ns=new string(""); string * buff = new string(""); .)
+		(Designator<f_node>
+		//|"["number"]" (.  cout<<"; desreferenciar "<<*obj->name<<endl; .) 
+		//|"."Factor<obj> (.  cout<<"; acceder "<<*obj->name<<endl; .) 
+ 		|"true" (. *obj=*new Obj(0,new string(""),symbol_table::boolType);  f_node = const_int_node(1); set_obj(f_node,obj);.)
+ 		|"false"(. *obj=*new Obj(0,new string(""),symbol_table::boolType);  f_node = const_int_node(0); set_obj(f_node,obj);.)
+ 		|"&" Factor<f_node> 
+ 		(.  cout<<"; referenciar "<<*get_obj(f_node)->name<<endl;  
+ 			make_ref(get_obj(f_node));  /*dump(obj->type,2);*/ 
+ 			f_node = (f_node);
+ 		.) // al refenciar el embuelve en un puntero 
+ 		|floatLit (.
+			LexString(buff);
+			*obj=*symbol_table::insert(1,new string(""),symbol_table::floatType);
+			//*obj=*new Obj(0,new string(""),symbol_table::floatType); 
+			//obj->val = stof(buff->c_str());
+			f_node = const_float_node(stof(buff->c_str()));
+ 			//cout<<"float "<<stof(buff->c_str())<<endl;
+			set_obj(f_node,obj);
+ 			.)
+ 	 	|stringConst (.
+			LexString(buff);
+			//*obj=*symbol_table::insert(0,new string(""),symbol_table::stringType);
+			*obj=*new Obj(0,new string(""),symbol_table::stringType); 
+			//make_ref(obj);
+			//string * key = sl->add(buff);
+
+			//obj->val = stof(buff->c_str());
+			//f_node = const_string_node(key);
+ 			//cout<<"float "<<stof(buff->c_str())<<endl;
+			//set_obj(f_node,obj);
+ 			.)
+		|number (.
+ 			//cout<<"number"<<endl;
+			LexString(buff);  
+			*obj=*new Obj(0,new string(""),symbol_table::intType); 
+			
+			obj->val = atoi(buff->c_str());
+			f_node = const_int_node(obj->val);
+			set_obj(f_node,obj);
+			.)
+		| "("Expr<f_node>")" 
+		|FuncDecl<f_node>
+		)
+		{ 
+			ActParams<f_node,true> (. cout << " ;call "<<*get_obj(f_node)->name<<endl; .) 
+		}
+	.
+    
+    /*ifc = is function call*/
+	ActParams<ASTU&f_node,bool ifc> (. Obj * obj = get_obj(f_node);  int n = 0; f_node = func_call(f_node,ifc);.) =
+		"(" [(.ASTU s_2;.)Expr<s_2>(.n++; block_add(f_node,s_2); .)
+			{","(.ASTU s_2;.)Expr<s_2>(.n++; block_add(f_node,s_2); .)}] ")" 
+    
+		(.
+			if(n!=obj->nPars){
+				cout<<";la funcion recibe n parametros: "<<obj->nPars<<" actual: "<<n<<  endl;
+				exit(1);
+			}
+			
+			unwrap_call_function(get_obj(f_node));
+		.)
+	.
+ 	
+	 
+ 	Designator<ASTU&d_ast> = (.Obj*obj = new Obj();  string * ns=new string(""); Obj * oex = new Obj(); .)
+ 		(name (. LexString(ns); 
+		 	*obj=*symbol_table::find(ns); 
+			 ASTU nc = ident(ns); 
+			 set_obj(nc,obj); 
+			 d_ast=nc;
+			 cout<<"; load "<<*get_obj(nc)->name<<", adr "<<get_obj(nc)->adr<<endl; .) 
+		|"*" Factor<d_ast> (. d_ast = (d_ast); cout<<"; desreferenciar "<<*get_obj(d_ast)->name<<endl; un_pointer(get_obj(d_ast)); dump(get_obj(d_ast)->type,2); .) 
+		)
+ 		(
+ 			{"." /*cargar arriba*/ name (. LexString(ns); *obj=*symbol_table::findField(ns,obj->type); cout<<"; load "<<*obj->name<<endl; .) }
+ 			|
+ 			("["Expr<d_ast>"]"  (.  un_pointer(obj); .) 
+ 			 {"["Expr<d_ast>"]" (.  un_pointer(obj); .)}
+ 			)
+ 		)
+ 	.
+
+
+END Pro.
+

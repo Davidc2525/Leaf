@@ -1,0 +1,46 @@
+
+
+#ifndef __ASS__
+#define __ASS__
+
+namespace LEAF
+{
+namespace ASSEMBLY
+{
+class Label;
+class Operand;
+class RegisterOperand;
+class MemoryOperand;
+class InmediateIntOperand;
+class Instruccion;
+class DInstruccion;
+class Directive;
+class Slock;
+
+class IntelVisitor;
+
+class Section;
+class Program;
+class Assembly;
+
+} // namespace ASSEMBLY
+} // namespace LEAF
+
+
+#include "interface/Slock.h"
+#include "interface/Label.h"
+#include "interface/Operand.h"
+#include "interface/Instruccion.h"
+#include "interface/Section.h"
+#include "interface/Program.h"
+#include "interface/Assembly.h"
+
+#include "implements/RegisterOperand.h"
+#include "implements/MemoryOperand.h"
+#include "implements/DInstruccion.h"
+#include "implements/InmediateIntOperand.h"
+#include "implements/IntelSyntaxProgram.h"
+#include "interface/Slock_visitor.h"
+#include "implements/IntelVisitor.h"
+
+#endif

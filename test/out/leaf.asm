@@ -17,72 +17,25 @@
 ;nPars 0
 ;nPars 0
 
-; flo es float
+; a es float
 
 ; find st, obj kind: 2, name float, type kind: 2
-; insert st, obj kind: 1, name flo, type kind: 2, level: 1
+; insert st, obj kind: 1, name a, type kind: 2, level: 1
 ;current adr 8 nvars 0
 ;adr: 8
 ;kind: 2
-;StatementBlockAdd 0x246c030 0x246e710
-;FuncDeclStm::add 0x246e710
-; find st, obj kind: 1, name flo, type kind: 2
-; load flo
-; insert st, obj kind: 1, name , type kind: 2, level: 1
+
+; c es
+; b es int
+
+; find st, obj kind: 2, name int, type kind: 1
+; find st, obj kind: 2, name int, type kind: 1
+; insert st, obj kind: 1, name c, type kind: 1, level: 1
 ;current adr 16 nvars 1
-; insert st, obj kind: 1, name , type kind: 2, level: 1
+;adr: 16
+;kind: 1
+; insert st, obj kind: 1, name b, type kind: 1, level: 1
 ;current adr 24 nvars 2
-;  declared twice
-; insert st, obj kind: 1, name , type kind: 2, level: 1
-;current adr 32 nvars 3
-;  declared twice
-;  declared twice
-;StatementBlockAdd 0x246c030 0x246f5a0
-;FuncDeclStm::add 0x246f5a0
-;StatementBlockAdd 0x246c030 0x246fa50
-;FuncDeclStm::add 0x246fa50
-;StatementBlockAdd 0x2469c90 0x246c030
-;-----------------------------
-section .data
-; strings literals (0)
-formato db "%d",10,0
-formato_real db "%f",10,0
-formato_string db "%s",0
-formato_char db "%c",10,0
-
-section .text
-global main
-extern printf
-; simbolos externos (0)
-
-main:
-PUSH rbp
-MOV rbp, rsp
-SUB rsp,32
-
-;ASSIGNMENT from binop
-mov DWORD [rbp-16],__float32__(2.590000) ;const float,  loadplace: 3
-fld DWORD [rbp-16]
-mov DWORD [rbp-24],__float32__(2.500000) ;const float,  loadplace: 3
-fld DWORD [rbp-24]
-fadd; ;const floa
-mov DWORD [rbp-32],__float32__(20.000000) ;const float,  loadplace: 3
-fld DWORD [rbp-32]
-fadd; ;const floa
-FSTP DWORD [rbp-8] ;store place: 3
-movss xmm0,[rbp-8]
-cvtss2sd xmm0,xmm0
-
-mov rdi , formato_real
-mov rax,1
-call printf
-MOV rax,0 ;const
-mov rsp,rbp 
-pop rbp 
-ret  
-
-MOV rsp,rbp 
-POP rbp 
-RET
-
-
+;adr: 24
+;kind: 1
+; find st, obj kind: 1, name a, type kind: 2

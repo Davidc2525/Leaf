@@ -13,6 +13,8 @@ void randomString(int size, char *output);
 string *_to_reg_(int r, int offset);
 string *_to_reg_(int r);
 
+
+
 class AstHandlerLinuxX86_64 : public AstHandler
 {
 public:

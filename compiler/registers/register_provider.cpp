@@ -104,7 +104,7 @@ Register *RegisterProvider::reserve()
     for (std::vector<Register *>::iterator x = it; x != registers_.end(); x++)
     {
         //cout<<"bussi: "<<isBussy((*x)->id)<<" reg: "<<(*x)->getName()<<" arc: "<< getArc()<<endl;
-        if (!isBussy((*x)->id) && (*x)->bits == getArc())
+        if (!isBussy((*x)->id) && (*x)->bits == getArc() && (*x)->reservable)
         {
             int dis = distance(it, x);
             found = registers_[dis];
@@ -132,7 +132,7 @@ Register *RegisterProvider::reserve_by_id(int id)
     for (std::vector<Register *>::iterator x = it; x != registers_.end(); x++)
     {
         //cout<<"bussi: "<<isBussy((*x)->id)<<" reg: "<<(*x)->getName()<<" arc: "<< getArc()<<endl;
-        if (id == (*x)->id)
+        if (id == (*x)->id && (*x)->reservable)
         {
             int dis = distance(it, x);
             found = registers_[dis];
@@ -161,7 +161,7 @@ Register *RegisterProvider::reserve_by_name2(char *name)
     for (std::vector<Register *>::iterator x = it; x != registers_.end(); x++)
     {
         //cout<<"bussi: "<<isBussy((*x)->id)<<" reg: "<<(*x)->getName()<<" arc: "<< getArc()<<endl;
-        if (0 == strcmp(name, ((Register *)*x)->getName()))
+        if (0 == strcmp(name, ((Register *)*x)->getName()) && (*x)->reservable)
         {
             int dis = distance(it, x);
             found = registers_[dis];
@@ -183,4 +183,55 @@ Register *RegisterProvider::reserve_by_name3(string *name)
 {
     return reserve_by_name(name->c_str());
 };
+
+Register *RegisterProvider::reserve_by_size(int size)
+{
+    Register *found = NULL;
+    vector<Register *>::iterator it = registers_.begin();
+    for (std::vector<Register *>::iterator x = it; x != registers_.end(); x++)
+    {
+        //cout<<"bussi: "<<isBussy((*x)->id)<<" reg: "<<(*x)->getName()<<" arc: "<< getArc()<<endl;
+        if (!isBussy((*x)->id)&&(*x)->reservable && (*x)->bits == size)
+        {
+            int dis = distance(it, x);
+            found = registers_[dis];
+            break;
+            //cout << ";index: " << dis << " reg: " << registers_[dis]->getName() << endl;
+        }
+    }
+
+    if (found == NULL)
+    {
+        throw "No hay Registro disponible";
+    }
+
+    (*reservers)[found->id]->push(1);
+    return found;
+};
+
+Register *RegisterProvider::get_by_size(int size)
+{
+    Register *found = NULL;
+    vector<Register *>::iterator it = registers_.begin();
+    for (std::vector<Register *>::iterator x = it; x != registers_.end(); x++)
+    {
+        //cout<<"bussi: "<<isBussy((*x)->id)<<" reg: "<<(*x)->getName()<<" arc: "<< getArc()<<endl;
+        if ( (*x)->bits == size)
+        {
+            int dis = distance(it, x);
+            found = registers_[dis];
+            break;
+            //cout << ";index: " << dis << " reg: " << registers_[dis]->getName() << endl;
+        }
+    }
+
+    if (found == NULL)
+    {
+        throw "No hay Registro disponible";
+    }
+
+    (*reservers)[found->id]->push(1);
+    return found;
+};
+
 int RegisterProvider::getArc(){NOIMPLEMENT};

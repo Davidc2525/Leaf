@@ -100,6 +100,32 @@ bool StructEq(Struct*o1,Struct*o2){
   }
 }
 
+
+class INTTOFLOATNODE:public EXPR{
+  public:
+    INTTOFLOATNODE(AST i){
+      child = i;
+      
+    }
+    AST child;
+    virtual void load(int R) ;
+    virtual void lea(int R)  { operation(Lea, R); }
+    virtual void operation(optypes O, int R);
+};
+void INTTOFLOATNODE::load(int r){
+  child->loadPlace = S_FPU;
+  child->load(r);
+  
+  //cout<<"cvtsi2ss xmm0,"<<*_to_reg_(r)<<endl;  
+  cout<<";coercion int to float, load: "<<*_to_reg_(r)<<endl;
+  //operation(Load,r);
+}
+void INTTOFLOATNODE::operation(optypes o,int r){
+  child->loadPlace = S_FPU;
+    child->load(r);
+    cout<<";coercion int to float,op: "<<*_to_reg_(r)<<endl;
+}
+ /////////////////////////////////////////////////////////////
  
   
 class BINOPNODE : public EXPR
@@ -231,63 +257,7 @@ void BINOPNODE::operation(optypes op, int R)
  
 void BINOPNODE::load(int R)
 { 
-  if(!StructEq(left->obj->type,right->obj->type)){
-
-      if(
-        *left->obj->type == *symbol_table::intType &&
-        *right->obj->type == *symbol_table::floatType
-        ){
-           BINOPNODE* r = dynamic_cast<BINOPNODE*>(left);
-          if(r!=nullptr){
-            
-          //r->left->obj->type = left->obj->type;
-          //r->right->obj->type = left->obj->type;
-            r->left->loadPlace = S_FPU;
-            r->right->loadPlace = S_FPU;
-            //left->obj->type = left->obj->type;
-          }
-          
-          //left->obj->type = right->obj->type;
-          left->loadPlace = S_FPU;
-          right->loadPlace = S_FPU;
-          obj->type = right->obj->type;
-      }else if(
-        *left->obj->type == *symbol_table::floatType &&
-        *right->obj->type == *symbol_table::intType
-        ){
-          
-          BINOPNODE* r = dynamic_cast<BINOPNODE*>(right);
-          if(r!=nullptr){
-            
-          //r->left->obj->type = left->obj->type;
-          //r->right->obj->type = left->obj->type;
-            r->left->loadPlace = S_FPU;
-            r->right->loadPlace = S_FPU;
-            //right->obj->type = left->obj->type;
-          }
-          left->loadPlace = S_FPU;
-          right->loadPlace = S_FPU;
-
-        obj->type = left->obj->type;
-      }else if(
-        *left->obj->type == *symbol_table::floatType &&
-        *right->obj->type == *symbol_table::floatType
-        ){
-           left->loadPlace = S_FPU;
-          right->loadPlace = S_FPU;
-           obj->type = left->obj->type;
-      }else{
-        cout<<"error de aritmetico, error de tipos"<<endl; 
-        exit(1);
-      }
-
-    }else{
-      obj->type=left->obj->type;
-      if(left->obj->type->kind == Struct::Float || loadPlace==S_FPU){
-        left->loadPlace = S_FPU;
-        right->loadPlace = S_FPU;
-      }
-    }
+ 
   if (!left || !right) return;
   //cout<<";IFRETURNOFFUNC left "<<left->ifReturnOfFunc<<endl;
   //cout<<";IFRETURNOFFUNC right "<<right->ifReturnOfFunc<<endl;
@@ -325,8 +295,43 @@ AST AstHandlerLinuxX86_64::BinOpNode(optypes op,AST left,AST right)
     }
     delete right; return left;
   }
+
+  if(!StructEq(left->obj->type,right->obj->type)){
+
+      if(
+        *left->obj->type == *symbol_table::intType &&
+        *right->obj->type == *symbol_table::floatType
+        ){
+
+          INTTOFLOATNODE*nk = new INTTOFLOATNODE(left);
+          nk->obj->type = right->obj->type;
+          left = nk;
+          
+      }else if(
+        *left->obj->type == *symbol_table::floatType &&
+        *right->obj->type == *symbol_table::intType
+        ){
+          
+           INTTOFLOATNODE*nk = new INTTOFLOATNODE(right);
+          nk->obj->type = left->obj->type;
+          right = nk;
+        
+      }else if(
+        *left->obj->type == *symbol_table::floatType &&
+        *right->obj->type == *symbol_table::floatType
+        ){
+          
+      }else{
+        cout<<"error de aritmetico, error de tipos"<<endl; 
+        exit(1);
+      }
+
+    }
+
   return new BINOPNODE(op, (EXPR*)left, (EXPR*)right);
 }
+
+
  /////////////////////////////////////////////////////////////
   class VARNODE : public  EXPR
   {  public:
@@ -821,11 +826,11 @@ AST AstHandlerLinuxX86_64::ConstStringNode(string * key)
 ////////////////////////////////////////////////////
 
  /*STM*/
- class StatementBlock : public BLOCK {
+ class StatementBlockNode : public BLOCK {
  public:
     AST * stms;
     int s = 0;
-    StatementBlock(){
+    StatementBlockNode(){
       stms = (AST*) malloc(sizeof(AST)*1000);
     }
     virtual void add(AST E);
@@ -836,12 +841,12 @@ AST AstHandlerLinuxX86_64::ConstStringNode(string * key)
    
 
  };
- void StatementBlock::add(AST e){
+ void StatementBlockNode::add(AST e){
 
     stms[s] = e;
     s++;
  }
-void StatementBlock::load(int R){
+void StatementBlockNode::load(int R){
   for(int x = 0;x<s;x++){
     //cout<<stms[x]<<endl;
     stms[x]->load(1);
@@ -1048,7 +1053,7 @@ public:
 
 
 NODE* AstHandlerLinuxX86_64::CreateStatementBlock(){
-  return new StatementBlock();
+  return new StatementBlockNode();
 }
 void AstHandlerLinuxX86_64:: StatementBlockAdd(AST  BS,AST S){
    cout<<";StatementBlockAdd "<<BS<<" "<<S<<endl;

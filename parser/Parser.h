@@ -6,8 +6,10 @@
 #include <stdlib.h>
  #include <cstring>
 
+ #include "../ast/ast.hpp"
+ #include "../compiler/backend/visitor.h"
  #include "../compiler/symb_tab/symbol_table.hpp"
- #include "../tree.hpp"
+ //#include "../tree.hpp"
  #include <iostream>
  using namespace std;
 
@@ -234,10 +236,11 @@ public:
    return false;
   }
 
-
-ExternSymbols*ss;
-StringLiterals*sl;
-AstHandler*ast_h;
+Section * data_section;
+//ExternSymbols*ss;
+//StringLiterals*sl;
+//AstHandler*ast_h;
+visitor * visitor_generator;
 
 
 
@@ -246,28 +249,28 @@ AstHandler*ast_h;
 	void SemErr(const wchar_t* msg);
 
 	void Pro();
-	void SourceCode(AST&b_node);
-	void Statement(AST&stat);
-	void StatementBLock(AST&b_node);
+	void SourceCode(ASTU&b_node);
+	void Statement(ASTU&stat);
+	void StatementBLock(ASTU&b_node);
 	void VarDecl();
-	void Designator(AST&d_ast);
-	void Expr(AST&e_node);
-	void ActParams(AST&f_node,bool ifc);
-	void FuncDecl(AST&f_node);
+	void Designator(ASTU&d_ast);
+	void Expr(ASTU&e_node);
+	void ActParams(ASTU&f_node,bool ifc);
+	void FuncDecl(ASTU&f_node);
 	void VarDcl(MetaData * md);
 	void VarDirectDcl(MetaData * md);
 	void VarSuffix(MetaData * md);
 	void FuncDcl(MetaData * fd);
 	void FuncDirectDcl(MetaData * fd);
 	void FuncSuffix(MetaData * fd);
-	void SimExpression(AST &E);
-	void BitShiffOp(AST &E);
-	void BitAndOrOp(AST &E);
-	void AndOrOp(AST &E);
-	void RelaOp(AST &E);
-	void AddOp(AST&t_node);
-	void Term(AST&t_node);
-	void Factor(AST&f_node);
+	void SimExpression(ASTU &E);
+	void BitShiffOp(ASTU &E);
+	void BitAndOrOp(ASTU &E);
+	void AndOrOp(ASTU &E);
+	void RelaOp(ASTU &E);
+	void AddOp(ASTU&t_node);
+	void Term(ASTU&t_node);
+	void Factor(ASTU&f_node);
 
 	void Parse();
 

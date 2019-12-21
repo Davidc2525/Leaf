@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "tree.h"
 
 using namespace std;
 class EXPR:public NODE{

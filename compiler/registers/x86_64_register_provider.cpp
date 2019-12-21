@@ -53,10 +53,21 @@ Register *X86_64RegisterProvider::reserve_by_name2(char *name)
     return RegisterProvider::reserve_by_name2(name);
 };
 Register *X86_64RegisterProvider::reserve_by_name3(string *name) { RegisterProvider::reserve_by_name3(name); };
+
 int X86_64RegisterProvider::getArc()
 {
     return this->arc;
 };
+
+Register *X86_64RegisterProvider::reserve_by_size(int size)
+{
+    return RegisterProvider::reserve_by_size(size);
+}
+
+Register *X86_64RegisterProvider::get_by_size(int size)
+{
+    return RegisterProvider::get_by_size(size);
+}
 
 X86_64RegisterProvider::X86_64RegisterProvider()
 {
@@ -99,6 +110,9 @@ X86_64RegisterProvider::X86_64RegisterProvider()
     registers_.push_back(new Register(counter++, new string("rsi"), this->arc, qword));
     registers_.push_back(new Register(counter++, new string("rdi"), this->arc, qword));
 
+    registers_.push_back(new Register(counter++, new string("rbp"), this->arc, qword, false));
+    registers_.push_back(new Register(counter++, new string("rsp"), this->arc, qword, false));
+
     registers_.push_back(new Register(counter++, new string("r8"), this->arc, qword));
     registers_.push_back(new Register(counter++, new string("r9"), this->arc, qword));
     registers_.push_back(new Register(counter++, new string("r10"), this->arc, qword));
@@ -107,6 +121,23 @@ X86_64RegisterProvider::X86_64RegisterProvider()
     registers_.push_back(new Register(counter++, new string("r13"), this->arc, qword));
     registers_.push_back(new Register(counter++, new string("r14"), this->arc, qword));
     registers_.push_back(new Register(counter++, new string("r15"), this->arc, qword));
+
+    string *no_word = new string("");
+    registers_.push_back(new Register(counter++, new string("xmm0"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm1"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm2"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm3"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm4"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm5"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm6"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm7"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm8"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm9"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm10"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm11"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm12"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm13"), 128, no_word));
+    registers_.push_back(new Register(counter++, new string("xmm14"), 128, no_word));
 
     reservers = new map<int, stack<int> *>;
     for (auto x = registers_.begin(); x != registers_.end(); x++)

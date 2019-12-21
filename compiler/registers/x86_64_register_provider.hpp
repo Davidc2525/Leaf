@@ -34,7 +34,11 @@ extern "C"
         virtual Register *reserve_by_name(const char *);
         virtual Register *reserve_by_name2(char *);
         virtual Register *reserve_by_name3(string *);
+
         virtual int getArc();
+
+        virtual Register *reserve_by_size(int);
+        virtual Register *get_by_size(int);
         //virtual Register *lessBussy(); //trabajar con la heredada
 
         X86_64RegisterProvider();
