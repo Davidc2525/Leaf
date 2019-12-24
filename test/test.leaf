@@ -41,9 +41,7 @@ fun m:string{
 	}
 *)
 
-
-
-fun main:int{
-	a,b,c:int;
-	b = (c+a)+(b+a)+(a+b);
+fun main:int {
+	a,b,c,d:int;
+	c = (a+b)+(c+d);
 }

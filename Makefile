@@ -26,6 +26,7 @@ LIB_OBJ = ast/node.o \
 			assembly/implements/InmediateIntOperand.o \
 			assembly/implements/RegisterOperand.o \
 			assembly/implements/MemoryOperand.o \
+			assembly/implements/SectionSlock.o \
 			assembly/interface/Program.o \
             tree.o \
 			threeFactory.o \

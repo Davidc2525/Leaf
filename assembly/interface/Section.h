@@ -23,11 +23,13 @@ enum Sections
 class Section
 {
 private:
+	Sections type;
 	vector<Slock *> slocks;
 	SlockVisitor *visitor;
-
+	
 public:
 	Section(SlockVisitor *);
+	Section(SlockVisitor *,Sections);
 
 	void write(ostream &);
 	void add(Slock *);

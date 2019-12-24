@@ -11,6 +11,7 @@ namespace ASSEMBLY
 
 enum Slock_kind
 {
+	section,
 	label,
 	operand,
 	instruccion,

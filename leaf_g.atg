@@ -591,7 +591,8 @@ PRODUCTIONS
 			 ASTU nc = ident(ns); 
 			 set_obj(nc,obj); 
 			 d_ast=nc;
-			 cout<<"; load "<<*get_obj(nc)->name<<", adr "<<get_obj(nc)->adr<<endl; .) 
+			 //cout<<"; load "<<*get_obj(nc)->name<<", adr "<<get_obj(nc)->adr<<endl; 
+			.) 
 		|"*" Factor<d_ast> (. d_ast = (d_ast); cout<<"; desreferenciar "<<*get_obj(d_ast)->name<<endl; un_pointer(get_obj(d_ast)); dump(get_obj(d_ast)->type,2); .) 
 		)
  		(

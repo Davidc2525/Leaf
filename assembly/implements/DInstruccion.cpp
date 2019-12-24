@@ -9,7 +9,7 @@ DInstruccion::DInstruccion(const char *i)
 }
 void DInstruccion::set_instruccion(const char *i)
 {
-	ins = new string(i);
+	ins = i;
 }
 void DInstruccion::accept(SlockVisitor *v)
 {

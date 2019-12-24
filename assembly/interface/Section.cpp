@@ -1,8 +1,27 @@
 
 #include "../assembly"
+
 using namespace LEAF::ASSEMBLY;
 
-Section::Section(SlockVisitor *v) { visitor = v; }
+Section::Section(SlockVisitor *v, Sections type)
+{
+    visitor = v;
+    this->type = type;
+    
+    /**
+     * Agregamos el slock para la seccion.
+     * ejemplo:
+     * 
+     * section .data
+     * ...
+     * section .text
+     * ...
+     * 
+    */
+    slocks.push_back(new SectionSlock(type));
+}
+Section::Section(SlockVisitor *v)
+    : Section(v, Sections::text) {}
 
 void Section::write(ostream &out)
 {

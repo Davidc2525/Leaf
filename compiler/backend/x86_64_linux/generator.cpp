@@ -15,14 +15,14 @@ x86_64_linux_generator_visitor::x86_64_linux_generator_visitor(ast_visitor_args 
  * */
 void x86_64_linux_generator_visitor::init(ASTU start)
 {
-    cout << ";x86_64 linux visitor" << endl;
+    cout << "x86_64 linux visitor" << endl;
     if (start == nullptr)
         return;
     reg = rp->reserve();
     start->accept(this);
 
     assembly->get_program()->write(*out_file);
-    cout << "\n;visits: " << visits_ins << endl;
+    cout << "visits: " << visits_ins << endl;
 }
 
 void x86_64_linux_generator_visitor::visit(Empty *empty)
@@ -58,7 +58,7 @@ void x86_64_linux_generator_visitor::visit(BinOp *bin)
  * patron:
  * 	+(a+b)
  * */
-void x86_64_linux_generator_visitor::visit1(BinOp *bin)
+void x86_64_linux_generator_visitor::visit1(BinOp *bin) //load_reg
 {
     UPDATE_STATICS
     bin->accept(this);
@@ -73,7 +73,8 @@ void x86_64_linux_generator_visitor::visit2(BinOp *bin)
 {
     UPDATE_STATICS
     Section *st = assembly->get_program()->section(Sections::text);
-
+    if (this->ax == Store)
+        throw "can´t store here";
     if (this->ax == Plus)
     {
         DInstruccion *i = new DInstruccion("add");
@@ -107,7 +108,7 @@ void x86_64_linux_generator_visitor::visit(FuncDeclStatementNode *func)
     st->add(mov_to_rbp);
     DInstruccion *sub_rsp = new DInstruccion("sub");
     sub_rsp->add_operand(new RegisterOperand("rsp"));
-    sub_rsp->add_operand(new InmediateIntOperand(0));
+    sub_rsp->add_operand(new InmediateIntOperand(func->obj->type->size));
     st->add(sub_rsp);
 
     //body function
@@ -189,7 +190,7 @@ void x86_64_linux_generator_visitor::visit2(Ident *ident)
 
         DInstruccion *i = new DInstruccion("mov");
         MemoryOperand *ops = new MemoryOperand();
-        ops->add_operand(new RegisterOperand("rbx"));
+        ops->add_operand(new RegisterOperand("rbp"));
         ops->add_operand(new InmediateIntOperand(ident->obj->adr));
         RegisterOperand *opd = new RegisterOperand(this->reg->getName());
         i->add_operand(opd);
@@ -201,7 +202,7 @@ void x86_64_linux_generator_visitor::visit2(Ident *ident)
     {
         DInstruccion *i = new DInstruccion("add");
         MemoryOperand *ops = new MemoryOperand();
-        ops->add_operand(new RegisterOperand("rbx"));
+        ops->add_operand(new RegisterOperand("rbp"));
         ops->add_operand(new InmediateIntOperand(ident->obj->adr));
         RegisterOperand *opd = new RegisterOperand(this->reg->getName());
         i->add_operand(opd);
@@ -213,7 +214,7 @@ void x86_64_linux_generator_visitor::visit2(Ident *ident)
     {
         DInstruccion *i = new DInstruccion("mov");
         MemoryOperand *ops = new MemoryOperand();
-        ops->add_operand(new RegisterOperand("rbx"));
+        ops->add_operand(new RegisterOperand("rbp"));
         ops->add_operand(new InmediateIntOperand(ident->obj->adr));
         RegisterOperand *opd = new RegisterOperand(this->reg->getName());
         i->add_operand(ops);

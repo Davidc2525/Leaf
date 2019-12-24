@@ -8,13 +8,13 @@ Program::Program(SlockVisitor *v)
     sections.insert(make_pair(Sections::text,
                               new Section(visitor)));
     sections.insert(make_pair(Sections::data,
-                              new Section(visitor)));
+                              new Section(visitor, Sections::data)));
     sections.insert(make_pair(Sections::bss,
-                              new Section(visitor)));
+                              new Section(visitor, Sections::bss)));
     sections.insert(make_pair(Sections::_extern,
-                              new Section(visitor)));
+                              new Section(visitor, Sections::_extern)));
     sections.insert(make_pair(Sections::global,
-                              new Section(visitor)));
+                              new Section(visitor, Sections::global)));
 }
 Program::Program()
     : Program(new IntelVisitor())
@@ -24,8 +24,8 @@ Program::Program()
 void Program::write(ostream &out)
 {
 
-    Sections secs[5] = {Sections::_extern,
-                        Sections::global,
+    Sections secs[5] = {Sections::global,
+                        Sections::_extern,
                         Sections::data,
                         Sections::bss,
                         Sections::text};

@@ -9,6 +9,33 @@ namespace ASSEMBLY
 
 string *IntelVisitor::get_src() { return this->tmp; }
 
+void IntelVisitor::visit(SectionSlock *l)
+{
+    string *s = new string("");
+
+    switch (l->sect)
+    {
+    case Sections::text:
+        s->append("section .text");
+        break;
+    case Sections::data:
+        s->append("section .data");
+        break;
+    case Sections::_extern:
+        s->append(";extern");
+        break;
+    case Sections::bss:
+        s->append("section .bss");
+        break;
+    case Sections::global:
+        s->append(";global");
+        break;
+
+    default:
+        break;
+    }
+    this->tmp = s;
+}
 void IntelVisitor::visit(Label *l)
 {
     string *label = new string(l->value);
@@ -40,7 +67,7 @@ void IntelVisitor::visit(InmediateIntOperand *l)
 }
 void IntelVisitor::visit(DInstruccion *l)
 {
-    string *out = new string(l->ins->c_str());
+    string *out = new string(l->ins);
     out->append(" ");
     vector<op_pair *>::iterator x = l->operands.begin();
     int c = 0;

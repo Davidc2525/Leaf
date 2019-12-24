@@ -7,6 +7,7 @@ namespace LEAF
 {
 namespace ASSEMBLY
 {
+class SectionSlock;
 class Label;
 class Operand;
 class RegisterOperand;
@@ -35,6 +36,7 @@ class Assembly;
 #include "interface/Program.h"
 #include "interface/Assembly.h"
 
+#include "implements/SectionSlock.h"
 #include "implements/RegisterOperand.h"
 #include "implements/MemoryOperand.h"
 #include "implements/DInstruccion.h"

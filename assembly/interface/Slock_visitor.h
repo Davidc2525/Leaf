@@ -14,6 +14,7 @@ class SlockVisitor
 public:
     virtual string *get_src() = 0;
 
+    virtual void visit(SectionSlock *) = 0;
     virtual void visit(Label *) = 0;
     virtual void visit(MemoryOperand *) = 0;
     virtual void visit(RegisterOperand *) = 0;

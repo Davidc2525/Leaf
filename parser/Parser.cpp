@@ -227,7 +227,8 @@ void Parser::Designator(ASTU&d_ast) {
 			ASTU nc = ident(ns); 
 			set_obj(nc,obj); 
 			d_ast=nc;
-			cout<<"; load "<<*get_obj(nc)->name<<", adr "<<get_obj(nc)->adr<<endl; 
+			//cout<<"; load "<<*get_obj(nc)->name<<", adr "<<get_obj(nc)->adr<<endl; 
+			
 		} else if (la->kind == _t_pointer) {
 			Get();
 			Factor(d_ast);

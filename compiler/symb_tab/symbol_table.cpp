@@ -81,11 +81,11 @@ Obj* symbol_table::find (string *name){
     for(Scope * s = curScope; s != NULL; (s = s->outer,ownScope=false)){
         for(Obj * p = s->locals; p != NULL; p = p->next){
             if(*p->name == *name) {
-                cout<<"; find st, obj kind: "<<p->kind<<", name "<<*p->name<<", type kind: "<<p->type->kind<<endl;
+                /*cout<<"; find st, obj kind: "<<p->kind<<", name "<<*p->name<<", type kind: "<<p->type->kind<<endl;
                 if(p->type->kind == Struct::Arr){
                     cout<<";  - elemtype kind: "<<p->type->elemType->kind<<endl;
 
-                }
+                }*/
                 //cout<<"; "<<*p->name<<" no pertenece a este ambito."<<endl;
                 return p;
             }

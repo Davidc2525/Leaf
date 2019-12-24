@@ -28,7 +28,7 @@
         exit(e);
 
 #if (defined(DEBUG) && (DEBUG == true))
-#define dlog(s, e) log(s, e)
+#define dlog(s, e) clog(s, e)
 #else
 #define dlog(s, e)
 #endif
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
         }
         else
         {
-            dlog(" errores: " + to_string(parser->errors->count), 0)
+            dlog(" errores: " + to_string(parser->errors->count), 1)
         }
 
         coco_string_delete(fileName);

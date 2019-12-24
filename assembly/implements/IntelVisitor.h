@@ -29,6 +29,7 @@ private:
 public:
     IntelVisitor(){};
     string *get_src();
+    void visit(SectionSlock*);
     void visit(Label *);
     void visit(MemoryOperand *);
     void visit(RegisterOperand *);

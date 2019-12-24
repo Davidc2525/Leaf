@@ -24,9 +24,8 @@ public:
 class DInstruccion : public Instruccion
 {
 private:
-
 public:
-	string *ins;
+	const char *ins;
 	vector<op_pair *> operands;
 	DInstruccion()
 	{
@@ -38,7 +37,7 @@ public:
 	void add_operand(Operand *ope, sizes);
 
 	//slock
-	void accept(SlockVisitor*);
+	void accept(SlockVisitor *);
 	//const char *to_string();
 	Slock_kind kind();
 };
