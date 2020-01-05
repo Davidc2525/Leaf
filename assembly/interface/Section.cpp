@@ -7,7 +7,7 @@ Section::Section(SlockVisitor *v, Sections type)
 {
     visitor = v;
     this->type = type;
-    
+
     /**
      * Agregamos el slock para la seccion.
      * ejemplo:
@@ -18,7 +18,37 @@ Section::Section(SlockVisitor *v, Sections type)
      * ...
      * 
     */
-    slocks.push_back(new SectionSlock(type));
+    bool show_title = false;
+    CONF::Conf &conf = CONF::ConfManager::get().group("leaf.compiler.asm.section.");
+
+    if (conf.get<bool>("show_title"))
+    {
+        if (type == Sections::text && conf.get<bool>("text.title.show"))
+        {
+            show_title = true;
+        }
+        if (type == Sections::data && conf.get<bool>("data.title.show"))
+        {
+            show_title = true;
+        }
+        if (type == Sections::bss && conf.get<bool>("bss.title.show"))
+        {
+            show_title = true;
+        }
+        if (type == Sections::global && conf.get<bool>("global.title.show"))
+        {
+            show_title = true;
+        }
+        if (type == Sections::_extern && conf.get<bool>("extern.title.show"))
+        {
+            show_title = true;
+        }
+    }
+
+    if (show_title)
+    {
+        slocks.push_back(new SectionSlock(type));
+    }
 }
 Section::Section(SlockVisitor *v)
     : Section(v, Sections::text) {}

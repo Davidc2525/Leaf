@@ -3,6 +3,7 @@
 #ifndef _SECTION_SLOCK_
 #define _SECTION_SLOCK_
 #include "../assembly"
+#include "../../conf/conf.h"
 #include <string>
 
 using namespace std;
@@ -16,7 +17,6 @@ class SectionSlock : public Slock
 {
 
 private:
-    
 public:
     Sections sect;
     SectionSlock(Sections);

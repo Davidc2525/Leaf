@@ -10,12 +10,14 @@
 
 #ifndef __X86_64_VISITOR_GENERATOR__
 #define __X86_64_VISITOR_GENERATOR__
+#include "../../../conf/conf.h"
 #include "../../../assembly/assembly"
 #include "../../registers/register.hpp"
 #include "../../registers/register_manager.hpp"
 #include "../ast_visitor.h"
 #include <fstream>
 using namespace LEAF::AST;
+using namespace LEAF::CONF;
 #define UPDATE_STATICS \
     visits_ins++;
 /**

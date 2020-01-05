@@ -5,7 +5,7 @@
  * */
 x86_64_linux_generator_visitor::x86_64_linux_generator_visitor(ast_visitor_args *args)
 {
-    out_file = new ofstream(args->outfile->c_str());
+    out_file = new ofstream(ConfManager::get().get<char *>("leaf.compiler.generator.outfile"));
     assembly = args->ass;
     rp = RegisterManager::getInstance()->getProviderBy(64);
 }

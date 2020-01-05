@@ -3,6 +3,7 @@
  * @author Colmenares David [david25pcxtreme@gmail.com]
  * */
 
+#include "conf/conf.h"
 #include <string.h>
 #include <iostream>
 #include "assembly/assembly"
@@ -77,24 +78,28 @@ string *label_of_function(Obj *f)
     return label;
 }
 
+void prepare_default_conf()
+{
+    LEAF::CONF::Conf &conf = LEAF::CONF::ConfManager::get();
+
+    //generator
+    conf.set<char *>("leaf.compiler.generator.outfile", "test/leaf.asm");
+
+    //sections; grupo: leaf.compiler.asm.section.
+    conf.set<bool>("leaf.compiler.asm.section.show_title", true); //general
+    conf.set<bool>("leaf.compiler.asm.section.text.title.show", true);
+    conf.set<bool>("leaf.compiler.asm.section.data.title.show", true);
+    conf.set<bool>("leaf.compiler.asm.section.bss.title.show", true);
+    conf.set<bool>("leaf.compiler.asm.section.extern.title.show", true);
+    conf.set<bool>("leaf.compiler.asm.section.global.title.show", true);
+}
+
 int main(int argc, char **argv)
 {
 
-    auto a = new Assembly(new Program());
+    //prepare default global configuration
+    prepare_default_conf();
 
-    DInstruccion *i = new DInstruccion("mov");
-    MemoryOperand *mo = new MemoryOperand;
-    mo->add_operand(new RegisterOperand("rbp"));
-    mo->add_operand(new InmediateIntOperand(8));
-    i->add_operand(mo);
-    i->add_operand(new RegisterOperand("rax"));
-
-    a->get_program()->section(Sections::text)->add(new Label("main"));
-    //for (int x = 0; x < 1000000; x++)
-    a->get_program()->section(Sections::text)->add(i);
-    ofstream *out = new ofstream("pro.asm");
-
-    a->get_program()->write(*out);
     /*if(argc<2){ 
         log("falta el archivo de programa",1)
     }
@@ -124,11 +129,6 @@ int main(int argc, char **argv)
         cout << ex << endl;
         exit(1);
     }
-
-    //ThreeFactory::getInstance()->addAstHandler(new AstHandler);
-    //int handler = ThreeFactory::getInstance()->addAstHandler(new CODE_GENERATOR::x86_64::AstHandlerLinuxX86_64);
-    //int handler = ThreeFactory::getInstance()->addAstHandler(new CODE_GENERATOR::x86_64::x86_64Linux);
-
     if (argc == 2)
     {
         wchar_t *fileName = coco_string_create(argv[1]);
@@ -138,8 +138,8 @@ int main(int argc, char **argv)
         //parser->ss = new ExternSymbols();
         //parser->sl = new StringLiterals();
         ast_visitor_args *args = new ast_visitor_args;
-        args->ass = new Assembly(new Program()); 
-        args->outfile = new string("tmp_pro_leaf_asm.asm");
+        args->ass = new Assembly(new Program());
+        //args->outfile = new string("tmp_pro_leaf_asm.asm");
 
         parser->data_section = args->ass->get_program()->section(Sections::data);
         parser->visitor_generator =

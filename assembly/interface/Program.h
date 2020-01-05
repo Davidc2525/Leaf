@@ -1,7 +1,7 @@
 
 
 #ifndef __PROGRAM__
-#define __PROGRAM__ value
+#define __PROGRAM__
 
 #include <map>
 #include "../assembly"

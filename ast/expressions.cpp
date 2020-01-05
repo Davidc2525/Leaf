@@ -25,14 +25,7 @@ Ident::Ident(string *name)
     
     this->obj->name = name;
 }
-void Ident::accept(ast_visitor *v)
-{
-    v->visit(this);
-} 
-void Ident::accept1(ast_visitor *v) { v->visit1(this); }
-void Ident::accept2(ast_visitor *v) { v->visit2(this); }
-void Ident::accept3(ast_visitor *v) { v->visit3(this); }
-void Ident::accept4(ast_visitor *v) { v->visit3(this); }
+ACCETPS_IMPL(Ident)
 
 Member::Member(){};
 Member::Member(ASTU object, ASTU property)

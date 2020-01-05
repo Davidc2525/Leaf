@@ -16,6 +16,7 @@ LIB_OBJ = ast/node.o \
 			ast/expressions.o \
 			ast/statement.o \
 			ast/ast.o \
+			conf/conf.o \
 			parser/Scanner.o \
             parser/Parser.o \
 			assembly/interface/Section.o \

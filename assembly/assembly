@@ -27,7 +27,7 @@ class Assembly;
 } // namespace ASSEMBLY
 } // namespace LEAF
 
-
+#include "../conf/conf.h"
 #include "interface/Slock.h"
 #include "interface/Label.h"
 #include "interface/Operand.h"

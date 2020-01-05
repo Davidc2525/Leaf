@@ -67,7 +67,8 @@ void IntelVisitor::visit(InmediateIntOperand *l)
 }
 void IntelVisitor::visit(DInstruccion *l)
 {
-    string *out = new string(l->ins);
+    string *out = new string("\t");
+    out->append(l->ins);
     out->append(" ");
     vector<op_pair *>::iterator x = l->operands.begin();
     int c = 0;
