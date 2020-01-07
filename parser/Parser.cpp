@@ -81,9 +81,9 @@ void Parser::Statement(ASTU&stat) {
 		switch (la->kind) {
 		case _t_pointer: case _name: case 14 /* "(" */: case 20 /* "," */: case 21 /* ":" */: case 22 /* "[" */: {
 			if (isVarDecl()) {
-				VarDecl();
+				stat = block_stat(); 
+				VarDeclDef(stat);
 				Expect(11 /* ";" */);
-				stat = empty_node(); 
 			} else {
 				Designator(stat);
 				if (la->kind == 12 /* "=" */) {
@@ -177,7 +177,7 @@ void Parser::StatementBLock(ASTU&b_node) {
 		Expect(10 /* "}" */);
 }
 
-void Parser::VarDecl() {
+void Parser::VarDeclDef(ASTU&s) {
 		int c_declaraciones = 0;
 		MetaData ** declaraciones = (MetaData**)malloc(sizeof(MetaData*)*100);
 		string * Tipe = new string(""); 
@@ -197,11 +197,9 @@ void Parser::VarDecl() {
 		cout << " " << *Tipe << endl<<endl; 
 		
 		for (int i = 0; i < c_declaraciones; i++)
-		{
-		
+		{							
 		Struct * tmp = last(declaraciones[i]->type);
-		*tmp = *symbol_table::find(Tipe)->type;
-		
+		*tmp = *symbol_table::find(Tipe)->type;								
 		}
 		
 		for (int i = 0; i < c_declaraciones; i++)
@@ -216,6 +214,47 @@ void Parser::VarDecl() {
 		dump(declaraciones[i]->type,0);
 		}
 		
+		
+		
+		if (la->kind == 12 /* "=" */) {
+			ASTU e; 
+			ASTU stat;
+			ASTU tmp_ident;
+			int inline_assign = 0;
+			
+			Get();
+			Expr(e);
+			if(inline_assign >= c_declaraciones){
+			cout<<"mas expreciones q variables"<<endl;
+			exit(1);
+			}
+			Obj*o = symbol_table::find(declaraciones[inline_assign]->tmpName);
+			tmp_ident = ident(declaraciones[inline_assign]->tmpName);
+			set_obj(tmp_ident,o);
+			
+			stat = assign(tmp_ident,e);
+			Obj*o2 = new Obj(1,new string(),new Struct()); 
+			set_obj(stat,o2);
+			block_add(s,stat);
+			inline_assign++; 
+			while (la->kind == 20 /* "," */) {
+				Get();
+				Expr(e);
+				if(inline_assign >= c_declaraciones){
+				cout<<"mas expreciones q variables"<<endl;
+				exit(1);
+				}
+				Obj*o = symbol_table::find(declaraciones[inline_assign]->tmpName);
+				tmp_ident = ident(declaraciones[inline_assign]->tmpName);
+				set_obj(tmp_ident,o);
+				
+				stat = assign(tmp_ident,e);
+				Obj*o2 = new Obj(1,new string(),new Struct()); 
+				set_obj(stat,o2);
+				block_add(s,stat);
+				inline_assign++; 
+			}
+		}
 }
 
 void Parser::Designator(ASTU&d_ast) {
@@ -307,7 +346,7 @@ void Parser::FuncDecl(ASTU&f_node) {
 		cout<<*FName<<" retorna "; 
 		} 
 		
-		obj=symbol_table::insert(4,FName,new Struct()); 
+		obj = symbol_table::insert(4,FName,new Struct()); 
 		
 		
 		symbol_table::pushCurrMethod(obj); 
@@ -374,6 +413,11 @@ void Parser::VarDcl(MetaData * md) {
 		} else if (StartOf(6)) {
 			VarDirectDcl(md);
 		} else SynErr(53);
+}
+
+void Parser::VarDecl() {
+		ASTU b = block_stat(); 
+		VarDeclDef(b);
 }
 
 void Parser::VarDirectDcl(MetaData * md) {

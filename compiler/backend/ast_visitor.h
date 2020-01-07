@@ -88,6 +88,7 @@ public:
 	VISITS(BlockStatemntNode)
 	VISITS(FuncDeclStatementNode)
 	VISITS(BinOp)
+	VISITS(Number)
 	VISITS(Ident)
 	VISITS(VarDecl)
 	VISITS(Member)

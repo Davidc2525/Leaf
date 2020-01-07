@@ -38,7 +38,7 @@ ASTU bin_op(op_types op, ASTU left, ASTU right)
     return new BinOp(left, op, right);
 }
 ASTU ident(string *name) { return new Ident(name); }
-ASTU const_int_node(int value) { ; }
+ASTU const_int_node(int value) { return new Number(value); }
 ASTU const_float_node(float value) { ; }
 ASTU const_double_node(float value) { ; }
 ASTU const_string_node(string *value) { ; }

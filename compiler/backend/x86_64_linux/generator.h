@@ -63,6 +63,12 @@ public:
     virtual void visit3(Ident *) { ; }
     virtual void visit4(Ident *) { ; }
 
+    virtual void visit(Number *b);
+    virtual void visit1(Number *);
+    virtual void visit2(Number *);
+    virtual void visit3(Number *) { ; }
+    virtual void visit4(Number *) { ; }
+
     virtual void visit(VarDecl *b) { ; }
     virtual void visit1(VarDecl *) { ; }
     virtual void visit2(VarDecl *) { ; }

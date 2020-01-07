@@ -256,7 +256,7 @@ PRODUCTIONS
  		= "{"{(.ASTU stat;.)Statement<stat> (. block_add(b_node,stat); .)}"}".
  	
  	Statement<ASTU&stat> (.ASTU e_stat;.)
- 	 =  ( IF(isVarDecl()) VarDecl ";"(. stat = empty_node(); .)
+ 	 =  ( IF(isVarDecl()) (. stat = block_stat(); .) VarDeclDef<stat> ";"
  	 		|Designator<stat> ("=" Expr<e_stat> 
  	 			(. 
  	 			if(!sreq(get_obj(stat)->type,get_obj(e_stat)->type)){
@@ -288,13 +288,13 @@ PRODUCTIONS
  		|StatementBLock<stat>
  		|";"
  		.
-
-	VarDecl = (.   
-	 	int c_declaraciones = 0;
+	
+	VarDeclDef<ASTU&s> = (. 
+		
+		int c_declaraciones = 0;
 	 	MetaData ** declaraciones = (MetaData**)malloc(sizeof(MetaData*)*100);
 	 	string * Tipe = new string(""); .)
-	 		 
- 			
+	 		  			
 			//":"
 			(.MetaData * md = new MetaData();.)
 			VarDcl<md> (.declaraciones[c_declaraciones++]=md;.)
@@ -305,24 +305,18 @@ PRODUCTIONS
 				(.declaraciones[c_declaraciones++]=md;.)
 			} 
 			":"
-			(
-
-				
+			(			
 					//"auto" (. cout<<";colocar tipo a variable de la exprecion"<<endl; .)
 					name (. Tipe = new string(""); LexString(Tipe);
 					
 						cout << " " << *Tipe << endl<<endl; 
 
 						for (int i = 0; i < c_declaraciones; i++)
-							{
-								
+							{							
 								Struct * tmp = last(declaraciones[i]->type);
-								*tmp = *symbol_table::find(Tipe)->type;
-								
+								*tmp = *symbol_table::find(Tipe)->type;								
 							}
-					.)
-
-				
+					.)			
 			)
  			 
  			(.
@@ -337,8 +331,58 @@ PRODUCTIONS
 
  					dump(declaraciones[i]->type,0);
  				}
+				
+				
  			.)
+		
+		[
+			(. 
+				ASTU e; 
+				ASTU stat;
+				ASTU tmp_ident;
+				int inline_assign = 0;
+			.)
+			"=" Expr<e> (. 
+				if(inline_assign >= c_declaraciones){
+					cout<<"mas expreciones q variables"<<endl;
+					exit(1);
+				}
+				Obj*o = symbol_table::find(declaraciones[inline_assign]->tmpName);
+				tmp_ident = ident(declaraciones[inline_assign]->tmpName);
+				set_obj(tmp_ident,o);
+
+				stat = assign(tmp_ident,e);
+				Obj*o2 = new Obj(1,new string(),new Struct()); 
+				set_obj(stat,o2);
+				block_add(s,stat);
+			 	inline_assign++; .)  
+			{"," Expr<e>
+			(. 
+				if(inline_assign >= c_declaraciones){
+					cout<<"mas expreciones q variables"<<endl;
+					exit(1);
+				}
+				Obj*o = symbol_table::find(declaraciones[inline_assign]->tmpName);
+				tmp_ident = ident(declaraciones[inline_assign]->tmpName);
+				set_obj(tmp_ident,o);
+
+				stat = assign(tmp_ident,e);
+				Obj*o2 = new Obj(1,new string(),new Struct()); 
+				set_obj(stat,o2);
+				block_add(s,stat);
+			 	inline_assign++; .) 
+			} 	
+		]		
+
+	
+		
+		.
+
+	VarDecl = (. ASTU b = block_stat(); .)
+		VarDeclDef<b>
 	.
+	
+	
 
 	VarDcl<MetaData * md>  = 
  		t_pointer
@@ -392,10 +436,10 @@ PRODUCTIONS
 				cout<<*FName<<" retorna "; 
 			} 
 
-			obj=symbol_table::insert(4,FName,new Struct()); 
+			obj = symbol_table::insert(4,FName,new Struct()); 
 			 
 
-			 symbol_table::pushCurrMethod(obj); 
+			symbol_table::pushCurrMethod(obj); 
 			symbol_table::openScope(); 
 
 			.)

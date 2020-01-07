@@ -33,16 +33,6 @@ fun m:string{
 	ret "hola mundo desde M";
 } */
 
-(*comentario q no es decoloreado
-	//para la declaracion de variables
-	
-	fun main:int{
-		a,b,r,*rp:int = 20,5,a+b,&r;
-	}
-*)
-
-
-fun main:int{
-	a, b, c, d : int;
-	c = (a + b) + (c + d);
+fun main():int {
+	a,b,c:int = 20,5,a+b;
 }

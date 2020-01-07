@@ -19,10 +19,17 @@ BinOp::BinOp(ASTU l, op_types op, ASTU r)
 }
 ACCETPS_IMPL(BinOp)
 
+Number::Number(int value)
+{
+    this->value = value;
+}
+ACCETPS_IMPL(Number)
+
+
 Ident::Ident(string *name)
 {
     this->name = name;
-    
+
     this->obj->name = name;
 }
 ACCETPS_IMPL(Ident)

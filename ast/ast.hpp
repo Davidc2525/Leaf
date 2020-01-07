@@ -35,6 +35,7 @@ enum op_types
 class NODEU;
 class Empty;
 class VarDecl;
+class Number;
 class Ident;
 class BinOp;
 class Member;

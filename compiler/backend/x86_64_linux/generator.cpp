@@ -18,6 +18,10 @@ void x86_64_linux_generator_visitor::init(ASTU start)
     cout << "x86_64 linux visitor" << endl;
     if (start == nullptr)
         return;
+
+    assembly->get_program()->section(Sections::global)->add(new DInstruccion("global main"));
+    assembly->get_program()->section(Sections::_extern)->add(new DInstruccion("extern printf"));
+
     reg = rp->reserve();
     start->accept(this);
 
@@ -184,14 +188,15 @@ void x86_64_linux_generator_visitor::visit(Ident *ident)
 void x86_64_linux_generator_visitor::visit1(Ident *ident) {}
 void x86_64_linux_generator_visitor::visit2(Ident *ident)
 {
+    UPDATE_STATICS
+
     Section *st = assembly->get_program()->section(Sections::text);
     if (this->ax == Load)
     {
-
         DInstruccion *i = new DInstruccion("mov");
         MemoryOperand *ops = new MemoryOperand();
         ops->add_operand(new RegisterOperand("rbp"));
-        ops->add_operand(new InmediateIntOperand(ident->obj->adr));
+        ops->add_operand(load_mod::sub, new InmediateIntOperand(ident->obj->adr));
         RegisterOperand *opd = new RegisterOperand(this->reg->getName());
         i->add_operand(opd);
         i->add_operand(ops);
@@ -203,7 +208,7 @@ void x86_64_linux_generator_visitor::visit2(Ident *ident)
         DInstruccion *i = new DInstruccion("add");
         MemoryOperand *ops = new MemoryOperand();
         ops->add_operand(new RegisterOperand("rbp"));
-        ops->add_operand(new InmediateIntOperand(ident->obj->adr));
+        ops->add_operand(load_mod::sub, new InmediateIntOperand(ident->obj->adr));
         RegisterOperand *opd = new RegisterOperand(this->reg->getName());
         i->add_operand(opd);
         i->add_operand(ops);
@@ -215,10 +220,41 @@ void x86_64_linux_generator_visitor::visit2(Ident *ident)
         DInstruccion *i = new DInstruccion("mov");
         MemoryOperand *ops = new MemoryOperand();
         ops->add_operand(new RegisterOperand("rbp"));
-        ops->add_operand(new InmediateIntOperand(ident->obj->adr));
+        ops->add_operand(load_mod::sub, new InmediateIntOperand(ident->obj->adr));
         RegisterOperand *opd = new RegisterOperand(this->reg->getName());
         i->add_operand(ops);
         i->add_operand(opd);
+        st->add(i);
+    }
+}
+
+void x86_64_linux_generator_visitor::visit(Number *number)
+{
+    UPDATE_STATICS
+    number->accept2(this);
+}
+void x86_64_linux_generator_visitor::visit1(Number *number) {}
+void x86_64_linux_generator_visitor::visit2(Number *number)
+{
+    UPDATE_STATICS
+    Section *st = assembly->get_program()->section(Sections::text);
+    if (this->ax == Load)
+    {
+        DInstruccion *i = new DInstruccion("mov");
+        InmediateIntOperand *ops = new InmediateIntOperand(number->value);
+        RegisterOperand *opd = new RegisterOperand(this->reg->getName());
+        i->add_operand(opd);
+        i->add_operand(ops);
+        st->add(i);
+    }
+
+    if (this->ax == op_types::Plus)
+    {
+        DInstruccion *i = new DInstruccion("add");
+        InmediateIntOperand *ops = new InmediateIntOperand(number->value);
+        RegisterOperand *opd = new RegisterOperand(this->reg->getName());
+        i->add_operand(opd);
+        i->add_operand(ops);
         st->add(i);
     }
 }

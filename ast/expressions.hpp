@@ -34,6 +34,15 @@ public:
     ACCETPS_INTERFACE
 };
 
+EXPRE_TYPE(Number)
+{
+public:
+    //Obj *obj = new Obj(0, new string(), new Struct());
+    Number(int value);
+    int value;
+    ACCETPS_INTERFACE
+};
+
 EXPRE_TYPE(Ident)
 {
 public:

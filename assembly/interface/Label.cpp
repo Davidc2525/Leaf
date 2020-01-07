@@ -4,7 +4,6 @@
 
 namespace LEAF
 {
-
 namespace ASSEMBLY
 {
 void Label::accept(SlockVisitor *v)
