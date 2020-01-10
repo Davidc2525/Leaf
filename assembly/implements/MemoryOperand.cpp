@@ -26,7 +26,7 @@ const char *LEAF::ASSEMBLY::enum_load_mod_to_str(load_mod m)
 		break;
 	}
 }
-void MemoryOperand::accept(SlockVisitor *v)
+void MemoryOperand::accept(SlotVisitor *v)
 {
     v->visit(this);
 }
@@ -45,9 +45,9 @@ void MemoryOperand::add_operand(Operand *ope)
 	add_operand(load_mod::add, ope);
 }
 
-Slock_kind MemoryOperand::kind()
+Slot_kind MemoryOperand::kind()
 {
-	return Slock_kind::operand;
+	return Slot_kind::operand;
 }
 
 _op_pair_::_op_pair_(load_mod m, Operand *ope)

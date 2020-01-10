@@ -4,7 +4,7 @@
 #define __SECTION__
 #include <vector>
 #include <iostream>
-#include "Slock.h"
+//#include "Slock.h"
 using namespace std;
 namespace LEAF
 {
@@ -24,15 +24,15 @@ class Section
 {
 private:
 	Sections type;
-	vector<Slock *> slocks;
-	SlockVisitor *visitor;
+	vector<Slot *> slots;
+	SlotVisitor *visitor;
 	
 public:
-	Section(SlockVisitor *);
-	Section(SlockVisitor *,Sections);
+	Section(SlotVisitor *);
+	Section(SlotVisitor *,Sections);
 
 	void write(ostream &);
-	void add(Slock *);
+	void add(Slot *);
 };
 
 /* class SectionData : public Section

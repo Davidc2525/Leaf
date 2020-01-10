@@ -6,7 +6,7 @@ namespace LEAF
 {
 namespace ASSEMBLY
 {
-void Label::accept(SlockVisitor *v)
+void Label::accept(SlotVisitor *v)
 {
     v->visit(this);
 }
@@ -20,9 +20,9 @@ Label::Label(char *name)
     this->value = name;
 }
 
-Slock_kind Label::kind()
+Slot_kind Label::kind()
 {
-    return Slock_kind::label;
+    return Slot_kind::label;
 }
 
 } // namespace ASSEMBLY

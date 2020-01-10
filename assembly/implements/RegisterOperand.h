@@ -19,9 +19,9 @@ public:
 	string *reg;
 	RegisterOperand(const char *);
 
-	void accept(SlockVisitor*);
+	void accept(SlotVisitor*);
 	//const char *to_string();
-	Slock_kind kind();
+	Slot_kind kind();
 };
 } // namespace ASSEMBLY
 } // namespace LEAF

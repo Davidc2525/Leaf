@@ -7,7 +7,7 @@ namespace LEAF
 {
 namespace ASSEMBLY
 {
-class SectionSlock;
+class SectionSlot;
 class Label;
 class Operand;
 class RegisterOperand;
@@ -16,7 +16,7 @@ class InmediateIntOperand;
 class Instruccion;
 class DInstruccion;
 class Directive;
-class Slock;
+class Slot;
 
 class IntelVisitor;
 
@@ -28,7 +28,7 @@ class Assembly;
 } // namespace LEAF
 
 #include "../conf/conf.h"
-#include "interface/Slock.h"
+#include "interface/Slot.h"
 #include "interface/Label.h"
 #include "interface/Operand.h"
 #include "interface/Instruccion.h"
@@ -36,13 +36,13 @@ class Assembly;
 #include "interface/Program.h"
 #include "interface/Assembly.h"
 
-#include "implements/SectionSlock.h"
+#include "implements/SectionSlot.h"
 #include "implements/RegisterOperand.h"
 #include "implements/MemoryOperand.h"
 #include "implements/DInstruccion.h"
 #include "implements/InmediateIntOperand.h"
 #include "implements/IntelSyntaxProgram.h"
-#include "interface/Slock_visitor.h"
+#include "interface/Slot_visitor.h"
 #include "implements/IntelVisitor.h"
 
 #endif

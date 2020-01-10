@@ -6,6 +6,8 @@
 	],
 	"settings": {
 		"files.associations": {
+			"*.atg": "plaintext",
+			"*.dv": "java",
 			"*.fly": "go",
 			"array": "cpp",
 			"*.tcc": "cpp",
@@ -68,7 +70,8 @@
 			"scoped_allocator": "cpp",
 			"typeindex": "cpp",
 			"valarray": "cpp",
-			"assembly": "cpp"
+			"assembly": "cpp",
+			"random": "cpp"
 		}
 	}
 }

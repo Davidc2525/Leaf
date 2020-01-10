@@ -9,7 +9,7 @@ namespace ASSEMBLY
 
 string *IntelVisitor::get_src() { return this->tmp; }
 
-void IntelVisitor::visit(SectionSlock *l)
+void IntelVisitor::visit(SectionSlot *l)
 {
     string *s = new string("");
 

@@ -1,7 +1,7 @@
 
 
-#ifndef _SECTION_SLOCK_
-#define _SECTION_SLOCK_
+#ifndef _SECTION_SLOT_
+#define _SECTION_SLOT_
 #include "../assembly"
 #include "../../conf/conf.h"
 #include <string>
@@ -13,17 +13,17 @@ namespace LEAF
 namespace ASSEMBLY
 {
 
-class SectionSlock : public Slock
+class SectionSlot : public Slot
 {
 
 private:
 public:
     Sections sect;
-    SectionSlock(Sections);
+    SectionSlot(Sections);
 
-    void accept(SlockVisitor *);
+    void accept(SlotVisitor *);
     //const char *to_string();
-    Slock_kind kind();
+    Slot_kind kind();
 };
 } // namespace ASSEMBLY
 } // namespace LEAF

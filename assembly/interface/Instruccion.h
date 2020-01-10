@@ -5,14 +5,14 @@
 
 #include "Operand.h"
 #include "sizes.h"
-#include "Slock.h"
+//#include "Slock.h"
 
 namespace LEAF
 {
 namespace ASSEMBLY
 {
 
-class Instruccion : public Slock
+class Instruccion : public Slot
 {
 public:
 	virtual void set_instruccion(const char *) = 0;

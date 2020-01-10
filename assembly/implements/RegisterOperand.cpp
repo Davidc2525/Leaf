@@ -7,7 +7,7 @@ namespace LEAF
 namespace ASSEMBLY
 {
 
-void RegisterOperand::accept(SlockVisitor *v)
+void RegisterOperand::accept(SlotVisitor *v)
 {
     v->visit(this);
 }
@@ -17,9 +17,9 @@ RegisterOperand::RegisterOperand(const char *r)
 	reg = new string(r);
 }
 
-Slock_kind RegisterOperand::kind()
+Slot_kind RegisterOperand::kind()
 {
-	return Slock_kind::operand;
+	return Slot_kind::operand;
 }
 
 } // namespace ASSEMBLY

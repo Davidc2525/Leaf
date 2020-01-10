@@ -19,8 +19,8 @@ public:
     int value;
     InmediateIntOperand(int);
     //slock
-    void accept(SlockVisitor*);
-    Slock_kind kind();
+    void accept(SlotVisitor*);
+    Slot_kind kind();
 };
 } // namespace ASSEMBLY
 } // namespace LEAF

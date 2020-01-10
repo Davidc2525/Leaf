@@ -2,7 +2,7 @@
 
 #include "Program.h"
 
-Program::Program(SlockVisitor *v)
+Program::Program(SlotVisitor *v)
 {
     visitor = v;
     sections.insert(make_pair(Sections::text,

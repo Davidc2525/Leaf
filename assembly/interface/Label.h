@@ -12,7 +12,7 @@ namespace LEAF
 namespace ASSEMBLY
 {
 
-class Label : public Slock
+class Label : public Slot
 {
 private:
 
@@ -22,8 +22,8 @@ public:
     Label(char *);
     //slock
    /// const char *to_string();
-    Slock_kind kind();
-    void accept(SlockVisitor *);
+    Slot_kind kind();
+    void accept(SlotVisitor *);
 };
 
 } // namespace ASSEMBLY

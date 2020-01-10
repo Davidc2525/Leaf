@@ -34,5 +34,5 @@ fun m:string{
 } */
 
 fun main():int {
-	a,b,c:int = 20,5,a+b;
+	a:int = 25;
 }

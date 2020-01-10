@@ -11,7 +11,7 @@ void DInstruccion::set_instruccion(const char *i)
 {
 	ins = i;
 }
-void DInstruccion::accept(SlockVisitor *v)
+void DInstruccion::accept(SlotVisitor *v)
 {
     v->visit(this);
 }
@@ -30,7 +30,7 @@ op_pair::op_pair(Operand *op, sizes s)
 	this->load_size = s;
 }
 
-Slock_kind DInstruccion::kind()
+Slot_kind DInstruccion::kind()
 {
-	return Slock_kind::instruccion;
+	return Slot_kind::instruccion;
 }

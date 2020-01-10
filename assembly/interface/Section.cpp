@@ -3,7 +3,7 @@
 
 using namespace LEAF::ASSEMBLY;
 
-Section::Section(SlockVisitor *v, Sections type)
+Section::Section(SlotVisitor *v, Sections type)
 {
     visitor = v;
     this->type = type;
@@ -47,24 +47,24 @@ Section::Section(SlockVisitor *v, Sections type)
 
     if (show_title)
     {
-        slocks.push_back(new SectionSlock(type));
+        slots.push_back(new SectionSlot(type));
     }
 }
-Section::Section(SlockVisitor *v)
+Section::Section(SlotVisitor *v)
     : Section(v, Sections::text) {}
 
 void Section::write(ostream &out)
 {
-    for (auto i = slocks.begin(); i != slocks.end(); i++)
+    for (auto i = slots.begin(); i != slots.end(); i++)
     {
         (*i)->accept(visitor);
         out << *visitor->get_src() << endl;
     }
 }
 
-void Section::add(Slock *s)
+void Section::add(Slot *s)
 {
-    slocks.push_back(s);
+    slots.push_back(s);
 }
 /* void SectionText::write() { cout << "write SectionText" << endl; }
 void SectionData::write() { cout << "write SectionData" << endl; }

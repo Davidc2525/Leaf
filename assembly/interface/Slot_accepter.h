@@ -4,7 +4,7 @@
 #define __SLOCK_ACCEPTER_H__
 
 #include <map>
-#include "Slock_visitor.h"
+#include "Slot_visitor.h"
 
 using namespace std;
 namespace LEAF
@@ -12,10 +12,10 @@ namespace LEAF
 namespace ASSEMBLY
 {
 
-class SlockAccepter
+class SlotAccepter
 {
 public:
-    virtual void accept(SlockVisitor *) = 0;
+    virtual void accept(SlotVisitor *) = 0;
 };
 
 } // namespace ASSEMBLY

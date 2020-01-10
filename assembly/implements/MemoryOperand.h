@@ -40,9 +40,9 @@ public:
 	void add_operand(Operand *);
 	void add_operand(load_mod, Operand *);
 	//slock
-	void accept(SlockVisitor*);
+	void accept(SlotVisitor*);
 	//const char *to_string();
-	Slock_kind kind();
+	Slot_kind kind();
 };
 } // namespace ASSEMBLY
 } // namespace LEAF

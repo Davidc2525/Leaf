@@ -13,12 +13,12 @@ namespace ASSEMBLY
 class Program
 {
 private:
-	SlockVisitor *visitor;
+	SlotVisitor *visitor;
 	map<Sections, Section *> sections;
 
 public:
 	Program();
-	Program(SlockVisitor *v);
+	Program(SlotVisitor *v);
 	void write(ostream &);
 	Section *section(Sections);
 };

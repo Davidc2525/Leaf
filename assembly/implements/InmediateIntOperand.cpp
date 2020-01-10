@@ -11,9 +11,9 @@ InmediateIntOperand::InmediateIntOperand(int value)
     this->value = value;
 }
  
-Slock_kind InmediateIntOperand::kind() { return Slock_kind::operand; }
+Slot_kind InmediateIntOperand::kind() { return Slot_kind::operand; }
 
-void InmediateIntOperand::accept(SlockVisitor *v)
+void InmediateIntOperand::accept(SlotVisitor *v)
 {
     v->visit(this);
 }

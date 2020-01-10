@@ -1,7 +1,7 @@
 
 
-#ifndef __SLOCK_VISITOR_H__
-#define __SLOCK_VISITOR_H__
+#ifndef __SLOT_VISITOR_H__
+#define __SLOT_VISITOR_H__
 
 #include "../assembly"
 using namespace std;
@@ -9,12 +9,12 @@ namespace LEAF
 {
 namespace ASSEMBLY
 {
-class SlockVisitor
+class SlotVisitor
 {
 public:
     virtual string *get_src() = 0;
 
-    virtual void visit(SectionSlock *) = 0;
+    virtual void visit(SectionSlot *) = 0;
     virtual void visit(Label *) = 0;
     virtual void visit(MemoryOperand *) = 0;
     virtual void visit(RegisterOperand *) = 0;
