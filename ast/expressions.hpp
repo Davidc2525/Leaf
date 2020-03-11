@@ -1,3 +1,6 @@
+
+
+
 /**
  * Contiene las expreciones 
 */
@@ -34,12 +37,23 @@ public:
     ACCETPS_INTERFACE
 };
 
-EXPRE_TYPE(Number)
+EXPRE_TYPE(IntConst)
 {
 public:
     //Obj *obj = new Obj(0, new string(), new Struct());
-    Number(int value);
+    IntConst(int value);
     int value;
+    ACCETPS_INTERFACE
+};
+
+EXPRE_TYPE(FloatConst)
+{
+public:
+    //Obj *obj = new Obj(0, new string(), new Struct());
+    FloatConst(float value);
+    float value;
+    string * adr_label;
+    bool in_data = false;
     ACCETPS_INTERFACE
 };
 

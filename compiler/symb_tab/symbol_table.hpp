@@ -13,12 +13,14 @@ class Struct;
 class Scope;
 class symbol_table;
 
+
 class symbol_table
 {
 public:
     symbol_table();
     ~symbol_table();
-
+    static int type_id;
+    static int get_id(Struct*type,int);
     static int globals;
     //static PROCESS::Native * native; // current top scope
     static Scope *curScope;  // current top scope
@@ -53,24 +55,26 @@ public:
 };
 class Struct
 { //type
-public:
+public:    
     static const int
         None = 0,
         Int = 1, Float = 2, Double = 3, Byte = 13, //numbers
         String = 4,
         Char = 11,
         Arr = 5, Pointer = 12,
-        Class = 6,
+        Class = 6, Interfaz = 13,
         Pack = 7, //TODO
         Bool = 8,
         Func = 9,
         Meth = 10;
 
+    Struct * h = NULL;       //Class: arbol de herencia
+    int type_id;             //Class
     static map<int, int> sizes;
     int size = 0;
 
     int kind;                // None, Int, String, Arr, Class
-    Struct *elemType = NULL; // Arr: element type
+    Struct *elemType = NULL; // Pointer, Arr: element type
     int nFields;             // Class: number of fields
     Obj *fields = NULL;      // Class: list of fields
 

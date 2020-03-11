@@ -1,5 +1,6 @@
 
 
+
 #ifndef __AST__
 #define __AST__
 #include "../compiler/symb_tab/symbol_table.hpp"
@@ -35,15 +36,18 @@ enum op_types
 class NODEU;
 class Empty;
 class VarDecl;
-class Number;
+class FloatConst;
+class IntConst;
 class Ident;
 class BinOp;
 class Member;
 class CostInt;
 class ConstFloat;
 class ConstDlouble;
-class AssignStatement;
 
+class ThrowStatementNode;
+class TryStatementNode;
+class CatchStatementNode;
 class AssignStatement;
 class BlockStatemntNode;
 class FuncDeclStatementNode;
@@ -93,6 +97,7 @@ namespace AST
 //
 ASTU block_stat();
 ASTU block_add(ASTU b, ASTU e);
+ASTU block_get(ASTU b, int index);
 ASTU func_decl(string *name);
 ASTU func_call(ASTU f_node, bool);
 ASTU procedure_call(ASTU f_node);
@@ -114,8 +119,15 @@ ASTU assign(ASTU left, ASTU right);
 ASTU print_node(ASTU);
 ASTU if_node(ASTU);
 ASTU if_else_node(ASTU);
+ASTU new_throw(ASTU ex);
+ASTU block_try();
+string * get_try_end_label(ASTU _try_);
+ASTU try_add_catch(ASTU _try_,ASTU _catch_);
+ASTU block_catch();
+string * get_catch_star_label(ASTU _catch_);
+void catch_set_adr_ex_var(ASTU _catch_,int index);
+void catch_set_ex_var(ASTU _catch_,ASTU ex_var);
 
-bool sreq(Struct *o1, Struct *o2);
 
 } // namespace AST
 } // namespace LEAF

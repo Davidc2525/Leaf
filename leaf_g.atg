@@ -259,7 +259,7 @@ PRODUCTIONS
  	 =  ( IF(isVarDecl()) (. stat = block_stat(); .) VarDeclDef<stat> ";"
  	 		|Designator<stat> ("=" Expr<e_stat> 
  	 			(. 
- 	 			if(!sreq(get_obj(stat)->type,get_obj(e_stat)->type)){
+ 	 			if(!get_obj(stat)->type->equals(get_obj(e_stat)->type)  ){
  	 				cout<<";error de asignacion, tipos diferentes."<<endl; 
  	 				dump(get_obj(stat)->type,2);
 					dump(get_obj(e_stat)->type,2);
@@ -276,19 +276,73 @@ PRODUCTIONS
 
  	 	//|Expr<stat>
  		|FuncDecl<stat>
+		|"class" name "{" (. stat = block_stat(); .)
+			( IF(isVarDecl())  VarDeclDef<stat> ";"
+			|FuncDecl<stat>";")
+		"}"
  		|"print" "(" Expr<e_stat> ")"";" (. stat = print_node(e_stat);.)
  		|"sizeof" "(" Expr<e_stat> ")"
  		|"ret"  (Expr<e_stat> (. 
- 				if(!sreq(symbol_table::currMethod()->type->elemType,get_obj(e_stat)->type)){cout<<";El valor q retorna no coincide con la firma. "<<*symbol_table::currMethod()->name<<endl; exit(1);}
+ 				if(!  symbol_table::currMethod()->type->elemType->equals(get_obj(e_stat)->type) ){cout<<";El valor q retorna no coincide con la firma. "<<*symbol_table::currMethod()->name<<endl; exit(1);}
  				stat = return_node(e_stat); set_obj(stat,get_obj(e_stat)); 
  				.)
  				| (.stat = return_node();.)
  			)";"
  		|"if""(" Expr<e_stat>  ")"  (. stat = if_node(e_stat); .) StatementBLock<stat>  ["else" StatementBLock<stat>]
- 		|StatementBLock<stat>
- 		|";"
+		| "throw" Expr<e_stat> (. stat = new_throw(e_stat); .)
+		|TryCatchStatement<stat>
+		|StatementBLock<stat>
+ 		|";" (. stat = empty_node(); .)
  		.
 	
+	TryCatchStatement<ASTU&stat> =  	(. stat = block_try();.)  
+		"try" StatementBLock<stat> 
+		PartCatchStatement<stat>
+		{PartCatchStatement<stat>}	
+	.
+
+	PartCatchStatement<ASTU&_try_> =	(. ASTU catch_ast; ASTU ex_var; .)
+		"catch" 						(. catch_ast = block_catch(); .) 
+		VarDeclDefCatch<ex_var> 		(. catch_set_ex_var(catch_ast,ex_var); .) 
+		StatementBLock<catch_ast>		(. try_add_catch(_try_,catch_ast); .)
+	.
+
+	VarDeclDefCatch<ASTU&s> = (. 
+		
+		int c_declaraciones = 0;
+	 	//MetaData ** declaraciones = (MetaData**)malloc(sizeof(MetaData*)*100);
+	 	string * Tipe = new string(""); .)
+	 		  			
+			//":"
+			(.MetaData * md = new MetaData();.)
+			VarDcl<md> 
+			":"
+			(			
+					//"auto" (. cout<<";colocar tipo a variable de la exprecion"<<endl; .)
+					name (. Tipe = new string(""); LexString(Tipe);
+					
+						cout << " " << *Tipe <<" type kind: "<<symbol_table::find(Tipe)->type->kind<<endl<<endl; 
+						
+						Struct * tmp = last(md->type);
+						*tmp = *symbol_table::find(Tipe)->type;	
+					.)			
+			)
+ 			 
+ 			(.
+
+			 	Obj * o = symbol_table::insert(Obj::Var,md->tmpName,md->type);
+
+				ASTU tmp_ident = ident(md->tmpName);
+				set_obj(tmp_ident,o);
+				s = tmp_ident;
+ 				dump(md->type,0);				
+ 			.)
+				
+
+	
+		
+		.
+
 	VarDeclDef<ASTU&s> = (. 
 		
 		int c_declaraciones = 0;
@@ -309,7 +363,7 @@ PRODUCTIONS
 					//"auto" (. cout<<";colocar tipo a variable de la exprecion"<<endl; .)
 					name (. Tipe = new string(""); LexString(Tipe);
 					
-						cout << " " << *Tipe << endl<<endl; 
+						cout << " " << *Tipe <<" type kind: "<<symbol_table::find(Tipe)->type->kind<<endl<<endl; 
 
 						for (int i = 0; i < c_declaraciones; i++)
 							{							
@@ -330,6 +384,7 @@ PRODUCTIONS
  					)->adr<<endl;;
 
  					dump(declaraciones[i]->type,0);
+					//cout<<"id type: "<<symbol_table::get_id(symbol_table::find(declaraciones[i]->tmpName)->type,0)<<endl;
  				}
 				
 				
@@ -583,6 +638,11 @@ PRODUCTIONS
 			f_node = const_float_node(stof(buff->c_str()));
  			//cout<<"float "<<stof(buff->c_str())<<endl;
 			set_obj(f_node,obj);
+
+			//string * resr = new string("dq fc_ ");
+			//resr->append(buff->c_str());
+			//data_section->add(new DInstruccion(resr->c_str()));
+			//visitor_generator->assembly->get_program()->section(Sections::data);
  			.)
  	 	|stringConst (.
 			LexString(buff);

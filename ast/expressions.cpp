@@ -1,4 +1,6 @@
 
+
+
 #include "expressions.hpp"
 
 namespace LEAF
@@ -19,11 +21,21 @@ BinOp::BinOp(ASTU l, op_types op, ASTU r)
 }
 ACCETPS_IMPL(BinOp)
 
-Number::Number(int value)
+IntConst::IntConst(int value)
 {
     this->value = value;
+} 
+ACCETPS_IMPL(IntConst)
+
+FloatConst::FloatConst(float value)
+{
+    this->value = value;
+    adr_label = rand_label::newLabel(10);
+    
 }
-ACCETPS_IMPL(Number)
+ACCETPS_IMPL(FloatConst)
+
+
 
 
 Ident::Ident(string *name)

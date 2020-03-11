@@ -40,7 +40,10 @@ LIB_OBJ = ast/node.o \
 			compiler/registers/x86_64_register_provider.o \
 			compiler/registers/x86_32_register_provider.o \
 			compiler/backend/x86_64/x86_64.o \
-			compiler/backend/x86_64_linux/generator.o 
+			compiler/backend/x86_64_linux/generator.o \
+			compiler/feactures/class/class_handler.o \
+			compiler/helper/graphs/graph.o 
+
             
 
 TARGET =  ./leafc

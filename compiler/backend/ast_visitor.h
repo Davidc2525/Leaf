@@ -1,3 +1,6 @@
+
+
+
 /**
  * 
  * Para la generacion de codigo se usa un patron de diseño llamado (visitor)
@@ -88,12 +91,16 @@ public:
 	VISITS(BlockStatemntNode)
 	VISITS(FuncDeclStatementNode)
 	VISITS(BinOp)
-	VISITS(Number)
+	VISITS(FloatConst)
+	VISITS(IntConst)
 	VISITS(Ident)
 	VISITS(VarDecl)
 	VISITS(Member)
 	VISITS(Empty)
 	VISITS(AssignStatement)
+	VISITS(ThrowStatementNode)
+	VISITS(TryStatementNode)
+	VISITS(CatchStatementNode)
 };
 
 #endif

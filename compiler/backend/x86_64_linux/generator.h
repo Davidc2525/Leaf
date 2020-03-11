@@ -1,3 +1,6 @@
+
+
+
 /**
  * 
  * Generador de instrucciones para el programa en ensamblador de salida.
@@ -63,11 +66,17 @@ public:
     virtual void visit3(Ident *) { ; }
     virtual void visit4(Ident *) { ; }
 
-    virtual void visit(Number *b);
-    virtual void visit1(Number *);
-    virtual void visit2(Number *);
-    virtual void visit3(Number *) { ; }
-    virtual void visit4(Number *) { ; }
+    virtual void visit(IntConst *b);
+    virtual void visit1(IntConst *);
+    virtual void visit2(IntConst *);
+    virtual void visit3(IntConst *) { ; }
+    virtual void visit4(IntConst *) { ; }
+
+    virtual void visit(FloatConst *b);
+    virtual void visit1(FloatConst *);
+    virtual void visit2(FloatConst *);
+    virtual void visit3(FloatConst *) { ; }
+    virtual void visit4(FloatConst *) { ; }
 
     virtual void visit(VarDecl *b) { ; }
     virtual void visit1(VarDecl *) { ; }
@@ -92,6 +101,24 @@ public:
     virtual void visit2(Empty *) { ; }
     virtual void visit3(Empty *) { ; }
     virtual void visit4(Empty *) { ; }
+
+    virtual void visit(ThrowStatementNode *b);
+    virtual void visit1(ThrowStatementNode *) { ; }
+    virtual void visit2(ThrowStatementNode *) { ; }
+    virtual void visit3(ThrowStatementNode *) { ; }
+    virtual void visit4(ThrowStatementNode *) { ; }
+
+    virtual void visit(TryStatementNode *b);
+    virtual void visit1(TryStatementNode *) { ; }
+    virtual void visit2(TryStatementNode *) { ; }
+    virtual void visit3(TryStatementNode *) { ; }
+    virtual void visit4(TryStatementNode *) { ; }
+
+    virtual void visit(CatchStatementNode *b);
+    virtual void visit1(CatchStatementNode *) { ; }
+    virtual void visit2(CatchStatementNode *) { ; }
+    virtual void visit3(CatchStatementNode *) { ; }
+    virtual void visit4(CatchStatementNode *) { ; }
     int ident = 0;
 };
 

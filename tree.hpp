@@ -336,7 +336,7 @@ AST ConstStringNode(string *value);
 AST ReturnNode(AST toReturn);
 AST ReturnNode();
 AST EmptyNode();
-// Creates an empty node
+// creates an empty node
 
 AST CreateIfNode(AST);
 AST CreateIfElseNode(AST, AST);

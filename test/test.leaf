@@ -32,7 +32,24 @@ fun promedio3(a:int,b:int,c:int):int{
 fun m:string{
 	ret "hola mundo desde M";
 } */
+	//b,c:float  = 2.5;
+
+//./leafc test/test.leaf && nasm -f elf64 test/leaf.asm &&  gcc test/leaf.o -o test/a.out && ./test/a.out 
+
 
 fun main():int {
-	a:int = 25;
+	a:int = 1;	
+	try{
+		try{
+			a = 10;
+			throw 20;
+		} catch e:int{
+			a = e;
+			throw a+5;
+		}
+	} catch ex:int{
+		a = ex;
+	}
+	
+	ret a;
 }

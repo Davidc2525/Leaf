@@ -421,8 +421,8 @@ Scanner::~Scanner() {
 void Scanner::Init() {
 	EOL    = '\n';
 	eofSym = 0;
-	maxT = 46;
-	noSym = 46;
+	maxT = 50;
+	noSym = 50;
 	int i;
 	for (i = 49; i <= 57; ++i) start.set(i, 28);
 	for (i = 65; i <= 90; ++i) start.set(i, 2);
@@ -443,8 +443,8 @@ void Scanner::Init() {
 	start.set(61, 58);
 	start.set(40, 35);
 	start.set(41, 36);
-	start.set(44, 37);
-	start.set(58, 38);
+	start.set(58, 37);
+	start.set(44, 38);
 	start.set(91, 39);
 	start.set(93, 40);
 	start.set(60, 59);
@@ -458,15 +458,19 @@ void Scanner::Init() {
 	start.set(47, 54);
 	start.set(37, 55);
 		start.set(Buffer::EoF, -1);
-	keywords.set(L"print", 13);
-	keywords.set(L"sizeof", 16);
-	keywords.set(L"ret", 17);
-	keywords.set(L"if", 18);
-	keywords.set(L"else", 19);
-	keywords.set(L"extern", 24);
-	keywords.set(L"fun", 25);
-	keywords.set(L"true", 43);
-	keywords.set(L"false", 44);
+	keywords.set(L"class", 13);
+	keywords.set(L"print", 14);
+	keywords.set(L"sizeof", 17);
+	keywords.set(L"ret", 18);
+	keywords.set(L"if", 19);
+	keywords.set(L"else", 20);
+	keywords.set(L"throw", 21);
+	keywords.set(L"try", 22);
+	keywords.set(L"catch", 23);
+	keywords.set(L"extern", 28);
+	keywords.set(L"fun", 29);
+	keywords.set(L"true", 47);
+	keywords.set(L"false", 48);
 
 
 	tvalLength = 128;
@@ -838,82 +842,82 @@ Token* Scanner::NextToken() {
 		case 34:
 			{t->kind = 11; break;}
 		case 35:
-			{t->kind = 14; break;}
-		case 36:
 			{t->kind = 15; break;}
+		case 36:
+			{t->kind = 16; break;}
 		case 37:
-			{t->kind = 20; break;}
+			{t->kind = 24; break;}
 		case 38:
-			{t->kind = 21; break;}
+			{t->kind = 25; break;}
 		case 39:
-			{t->kind = 22; break;}
+			{t->kind = 26; break;}
 		case 40:
-			{t->kind = 23; break;}
+			{t->kind = 27; break;}
 		case 41:
 			case_41:
-			{t->kind = 26; break;}
+			{t->kind = 30; break;}
 		case 42:
 			case_42:
-			{t->kind = 27; break;}
+			{t->kind = 31; break;}
 		case 43:
-			{t->kind = 28; break;}
+			{t->kind = 32; break;}
 		case 44:
-			{t->kind = 30; break;}
+			{t->kind = 34; break;}
 		case 45:
 			case_45:
-			{t->kind = 31; break;}
+			{t->kind = 35; break;}
 		case 46:
 			case_46:
-			{t->kind = 32; break;}
+			{t->kind = 36; break;}
 		case 47:
 			case_47:
-			{t->kind = 33; break;}
+			{t->kind = 37; break;}
 		case 48:
 			if (ch == L'=') {AddCh(); goto case_49;}
 			else {goto case_0;}
 		case 49:
 			case_49:
-			{t->kind = 34; break;}
+			{t->kind = 38; break;}
 		case 50:
 			case_50:
-			{t->kind = 36; break;}
+			{t->kind = 40; break;}
 		case 51:
 			case_51:
-			{t->kind = 38; break;}
-		case 52:
-			{t->kind = 39; break;}
-		case 53:
-			{t->kind = 40; break;}
-		case 54:
-			{t->kind = 41; break;}
-		case 55:
 			{t->kind = 42; break;}
+		case 52:
+			{t->kind = 43; break;}
+		case 53:
+			{t->kind = 44; break;}
+		case 54:
+			{t->kind = 45; break;}
+		case 55:
+			{t->kind = 46; break;}
 		case 56:
 			recEnd = pos; recKind = 2;
 			if (ch == L'&') {AddCh(); goto case_45;}
 			else {t->kind = 2; break;}
 		case 57:
-			recEnd = pos; recKind = 45;
+			recEnd = pos; recKind = 49;
 			if ((ch >= L'0' && ch <= L'9')) {AddCh(); goto case_14;}
-			else {t->kind = 45; break;}
+			else {t->kind = 49; break;}
 		case 58:
 			recEnd = pos; recKind = 12;
 			if (ch == L'=') {AddCh(); goto case_47;}
 			else {t->kind = 12; break;}
 		case 59:
-			recEnd = pos; recKind = 37;
+			recEnd = pos; recKind = 41;
 			if (ch == L'<') {AddCh(); goto case_41;}
 			else if (ch == L'=') {AddCh(); goto case_51;}
-			else {t->kind = 37; break;}
+			else {t->kind = 41; break;}
 		case 60:
-			recEnd = pos; recKind = 35;
+			recEnd = pos; recKind = 39;
 			if (ch == L'>') {AddCh(); goto case_42;}
 			else if (ch == L'=') {AddCh(); goto case_50;}
-			else {t->kind = 35; break;}
+			else {t->kind = 39; break;}
 		case 61:
-			recEnd = pos; recKind = 29;
+			recEnd = pos; recKind = 33;
 			if (ch == L'|') {AddCh(); goto case_46;}
-			else {t->kind = 29; break;}
+			else {t->kind = 33; break;}
 
 	}
 	AppendVal(t);

@@ -14,6 +14,7 @@
 #include "parser/Scanner.h"
 #include "threeFactory.hpp"
 #include "compiler/symb_tab/symbol_table.hpp"
+//#include "compiler/feactures/class/class_handler.h"
 //#include "AstHandlerLinuxX86_64.hpp"
 #include "stdio.h"
 #include <sys/timeb.h>
@@ -36,6 +37,7 @@
 
 using namespace std;
 using namespace std::rel_ops;
+//using namespace LEAF::FEACTURE::CLASS;
 
 string *label_of_function(Obj *f)
 {

@@ -1,5 +1,6 @@
 
 
+
 #include "statement.hpp"
 
 FuncDeclStatementNode::FuncDeclStatementNode() { name = new string(""); };
@@ -25,4 +26,51 @@ void BlockStatemntNode::add(ASTU e)
     nodos.push_back(e);
     //stms[s] = e;
     s++;
+}
+
+ACCETPS_IMPL(ThrowStatementNode)
+ThrowStatementNode::ThrowStatementNode(ASTU ex)
+{
+    child = ex;
+}
+
+ACCETPS_IMPL(TryStatementNode)
+TryStatementNode::TryStatementNode(ASTU child)
+{
+    this->child = child;
+}
+TryStatementNode::TryStatementNode()
+{
+    end_label = rand_label::newLabel(10);
+    end_label_wout_pop = rand_label::newLabel(10);
+    //end_label->append(":");
+}
+void TryStatementNode::add(ASTU e)
+{
+    nodos.push_back(e);
+    s++;
+}
+void TryStatementNode::add_catch(ASTU e)
+{
+    _caths_.push_back(e);
+}
+
+string *TryStatementNode::get_end_label()
+{
+    return end_label;
+}
+
+ACCETPS_IMPL(CatchStatementNode)
+CatchStatementNode::CatchStatementNode()
+{
+    start_label = rand_label::newLabel(10);
+}
+void CatchStatementNode::add(ASTU e)
+{
+    nodos.push_back(e);
+    s++;
+}
+void CatchStatementNode::add_try_end_label(string *tel)
+{
+    try_end_label = tel;
 }
